@@ -115,7 +115,7 @@ static wait_queue_head_t g_wait_queue_for_data;
 
 static bool g_stop_accept;
 
-static u32 MIN(u32 arg1, u32 arg2)
+static u32 tee_min(u32 arg1, u32 arg2)
 {
 	return arg1 < arg2 ? arg1 : arg2;
 }
@@ -270,7 +270,7 @@ static u32 write_once_cache(struct data_pipe_s *pipe, struct cyclic_cache_s *cac
 	char *cache_end = NULL;
 
 	if (is_cache_empty(pipe->status, cache)) {
-		once_write_size = MIN(*to_write_size, cache->cache_size);
+		once_write_size = tee_min(*to_write_size, cache->cache_size);
 		if (once_write_size &&
 				copy_from_user(cache->cache, *to_write_data, once_write_size))
 			goto err;
@@ -284,7 +284,7 @@ static u32 write_once_cache(struct data_pipe_s *pipe, struct cyclic_cache_s *cac
 		cache_end = cache->cache + cache->cache_size - 1;
 		if (cache->data_end != cache_end) {
 			empty_size = cache_end - cache->data_end;
-			once_write_size = MIN(*to_write_size, empty_size);
+			once_write_size = tee_min(*to_write_size, empty_size);
 			if (once_write_size && copy_from_user(cache->data_end + 1,
 						*to_write_data, once_write_size))
 				goto err;
@@ -296,7 +296,7 @@ static u32 write_once_cache(struct data_pipe_s *pipe, struct cyclic_cache_s *cac
 			DEBUG("empty_size = %d\n", empty_size);
 		} else {
 			empty_size = cache->data_start - cache->cache;
-			once_write_size = MIN(*to_write_size, empty_size);
+			once_write_size = tee_min(*to_write_size, empty_size);
 			if (once_write_size && copy_from_user(cache->cache,
 						*to_write_data, once_write_size))
 				goto err;
@@ -308,7 +308,7 @@ static u32 write_once_cache(struct data_pipe_s *pipe, struct cyclic_cache_s *cac
 			DEBUG("empty_size = %d\n", empty_size);
 		}
 	} else if (cache->data_start > cache->data_end) {
-		once_write_size = MIN(*to_write_size, cache->data_size);
+		once_write_size = tee_min(*to_write_size, cache->data_size);
 		if (once_write_size && copy_from_user(cache->data_end + 1,
 					*to_write_data, once_write_size))
 			goto err;
@@ -391,7 +391,7 @@ static u32 read_once_cache(struct data_pipe_s *pipe, struct cyclic_cache_s *cach
 	if (cache->data_start > cache->data_end) {
 		cache_end = cache->cache + cache->cache_size - 1;
 		readable_size = cache_end - cache->data_start + 1;
-		once_read_size = MIN(*buf_size, readable_size);
+		once_read_size = tee_min(*buf_size, readable_size);
 		if (once_read_size && copy_to_user(*data_buf, cache->data_start,
 					once_read_size))
 			goto err;
@@ -405,7 +405,7 @@ static u32 read_once_cache(struct data_pipe_s *pipe, struct cyclic_cache_s *cach
 				(long)cache->data_end, once_read_size);
 		DEBUG("readable_size = %d\n", readable_size);
 	} else {
-		once_read_size = MIN(*buf_size, cache->data_size);
+		once_read_size = tee_min(*buf_size, cache->data_size);
 		if (once_read_size && copy_to_user(*data_buf, cache->data_start,
 					once_read_size))
 			goto err;

@@ -42,7 +42,7 @@ struct proc_dir_entry *cpufreq_proc;
 static int opp_table_index[MAX_CLUSTERS];
 static u32 dsu_voltage_vote_result[VOTER_NUM];
 static u32 dsu_freq_vote_result[VOTER_NUM];
-#define MAX(x1, x2) ({ \
+#define MESON_MAX(x1, x2) ({ \
 	typeof(x1) _x1 = x1; \
 	typeof(x2) _x2 = x2; \
 	(_x1 > _x2 ? _x1 : _x2); })
@@ -109,7 +109,7 @@ static int meson_set_shared_dsu_rate(struct clk *dsu,
 {
 	int ret = 0;
 	struct clk *dsu_parent;
-	unsigned int dsu_set_rate = MAX(dsu_freq_vote_result[LITTLE_VOTER],
+	unsigned int dsu_set_rate = MESON_MAX(dsu_freq_vote_result[LITTLE_VOTER],
 		dsu_freq_vote_result[BIG_VOTER]);
 
 	dsu_parent = dsu_set_rate > low_dsu_rate ? gp1_parent : dyn_parent;
