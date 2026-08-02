@@ -4,7 +4,7 @@ for VIM3, VIM3L, VIM2, VIM1S, VIM1, Edge-V  */
 #include <dt-bindings/input/input.h>
 
 &custom_maps {
-		mapnum = <1>;
+		map_num = <1>;
 		map0 = <&map_0>;
 		map_0: map_0{
 			mapname = "khadas-ir";

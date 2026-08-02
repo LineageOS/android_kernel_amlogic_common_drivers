@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
  * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
- * Ported for Khadas VIM1S (Kernel 5.15 DRM - Updated Base)
  */
 
 /dts-v1/;
@@ -220,18 +219,6 @@
 		tv_mode = <0>;
 	};
 
-	dvb-extern {
-		compatible = "amlogic, dvb-extern";
-		dev_name = "dvb-extern";
-		status = "disabled";
-	};
-
-	dvb-demux {
-		compatible = "amlogic sc2, dvb-demux";
-		dev_name = "dvb-demux";
-		status = "disabled";
-	};
-
 	ionvideo {
 		compatible = "amlogic, ionvideo";
 		dev_name = "ionvideo";
@@ -280,12 +267,6 @@
 		nr10bit-support = <1>;
 		nrds-enable = <1>;
 		pps-enable = <1>;
-	};
-
-	aml_dtv_demod {
-		compatible = "amlogic, ddemod-s4";
-		dev_name = "aml_dtv_demod";
-		status = "disabled";
 	};
 
 	unifykey{
@@ -445,9 +426,6 @@
 		compatible = "amlogic, auge-sound-card";
 		aml-audio-card,name = "AML-AUGESOUND";
 
-		avout_mute-gpios = <&gpio GPIOH_5 GPIO_ACTIVE_HIGH>;
-		spk_mute-gpios = <&gpio GPIOH_8 GPIO_ACTIVE_LOW>;
-
 		aml-audio-card,dai-link@0 {
 			format = "dsp_a";
 			mclk-fs = <64>;
@@ -492,7 +470,6 @@
 			mclk-fs = <256>;
 			bitclock-master = <&tdmc>;
 			frame-master = <&tdmc>;
-			suffix-name = "alsaPORT-i2s";
 			cpu {
 				sound-dai = <&tdmc>;
 				dai-tdm-slot-tx-mask = <1 1>;
@@ -583,7 +560,6 @@
 		key_code = <102>;
 		key_val = <108>;
 		key_tolerance = <40>;
-		mboxes = <&mbox_fifo S4_REE2AO_KEYPAD>;
 	};
 
 	gpio_keypad{
@@ -633,7 +609,7 @@
 		fan,trig_temp_level3 = <80>;
 		hwver = "VIM1S.V10";
 	};
-	khadas-rtc {
+	khadas-rtc@51 {
 		compatible = "khadas-rtc";
 		reg = <0x51>;
 	};
@@ -714,7 +690,6 @@
 			&tdm_d5_pins 
 			&tdmb_clk_pins>;
 		src-clk-freq = <1179648000>;
-		i2s2hdmi = <1>;
 		start_clk_enable = <1>;
 		clk_tuning_enable = <1>;
 		status = "okay";
@@ -924,12 +899,6 @@
 			function = "tdm_clk_outa";
 		};
 	};
-	mclk_2_pins: mclk_2_pin {
-		mux { /* GPIOZ_6 */
-			groups = "tdm_mclk2";
-			function = "tdm_clk_outb";
-		};
-	};
 	tdm_d4_pins: tdm_d4_pin {
 		mux {
 			groups = "tdm_d4";
@@ -967,6 +936,12 @@
 				"tdm_d4_z",
 				"tdm_d5_z";
 			function = "tdm";
+		};
+	};
+	mclk_2_pins: mclk_2_pin {
+		mux { /* GPIOZ_6 */
+			groups = "mclk_2";
+			function = "mclk";
 		};
 	};
 	spdifout: spdifout {
