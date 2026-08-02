@@ -686,7 +686,7 @@
 		hwver = "VIM1S.V10";
 	};
 
-	khadas-rtc {
+	khadas-rtc@51 {
 		compatible = "khadas-rtc";
 		reg = <0x51>;
 	};
