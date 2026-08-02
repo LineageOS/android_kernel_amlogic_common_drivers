@@ -1112,13 +1112,6 @@
 		};
 	};
 
-	mclk_2_pins: mclk_2_pin {
-		mux { /* GPIOZ_6 */
-			groups = "mclk2";
-			function = "mclk";
-		};
-	};
-
 	tdm_d4_pins: tdm_d4_pin {
 		mux {
 			groups = "tdm_d4";
@@ -1159,6 +1152,13 @@
 				"tdm_d4_z",
 				"tdm_d5_z";
 			function = "tdm";
+		};
+	};
+
+	mclk_2_pins: mclk_2_pin {
+		mux { /* GPIOZ_6 */
+			groups = "mclk_2";
+			function = "mclk";
 		};
 	};
 
