@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
  * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
- * Ported for Khadas VIM1S (Kernel 5.15 DRM - Updated Base)
  */
 
 /dts-v1/;
+
 #include "meson-s4.dtsi"
 #include "hdr10plus.dtsi"
 #include "mesons4_drm.dtsi"
@@ -106,7 +106,6 @@
 			size = <0x0 0x0>;
 			alignment = <0x0 0x400000>;
 		};
-
 		dmaheap_fb_reserved:heap-fb {
 			compatible = "shared-dma-pool";
 			reusable;
@@ -122,7 +121,6 @@
 			size = <0x0 0x5800000>;
 			alignment = <0x0 0x400000>;
 		};
-
 		di_cma_reserved:linux,di_cma {
 			compatible = "shared-dma-pool";
 			reusable;
@@ -172,7 +170,6 @@
 			alloc-ranges = <0x0 0x0 0x0 0x30000000>;
 		};
 	};
-
 	sdcard_power: regulator-sdcard {
 		compatible = "regulator-fixed";
 		regulator-name = "SDCARD_POWER";
@@ -191,19 +188,7 @@
 		gpios = <&gpio GPIOD_9 GPIO_ACTIVE_HIGH>;
 		gpios-states = <1>;
 		states = <1800000 1
-			  3300000 0>;
-	};
-
-	khadas-hwver {
-		compatible = "khadas-hwver";
-		status = "okay";
-	};
-
-	khadas_wdt {
-		compatible = "linux,wdt-khadas";
-		status = "okay";
-		hw_margin_ms = <500>;
-		hw-gpios = <&gpio  GPIOD_10  GPIO_ACTIVE_HIGH>;
+			3300000 0>;
 	};
 
 	codec_mm {
@@ -212,7 +197,6 @@
 		dev_name = "codec_mm";
 		status = "okay";
 	};
-
 	amdolby_vision {
 		compatible = "amlogic, dolby_vision_sc2";
 		dev_name = "aml_amdolby_vision_driver";
@@ -220,17 +204,6 @@
 		tv_mode = <0>;
 	};
 
-	dvb-extern {
-		compatible = "amlogic, dvb-extern";
-		dev_name = "dvb-extern";
-		status = "disabled";
-	};
-
-	dvb-demux {
-		compatible = "amlogic sc2, dvb-demux";
-		dev_name = "dvb-demux";
-		status = "disabled";
-	};
 
 	ionvideo {
 		compatible = "amlogic, ionvideo";
@@ -280,12 +253,6 @@
 		nr10bit-support = <1>;
 		nrds-enable = <1>;
 		pps-enable = <1>;
-	};
-
-	aml_dtv_demod {
-		compatible = "amlogic, ddemod-s4";
-		dev_name = "aml_dtv_demod";
-		status = "disabled";
 	};
 
 	unifykey{
@@ -439,14 +406,11 @@
 			size = <16>;
 		};
 	};
-
 	/* Audio Related start */
+
 	auge_sound {
 		compatible = "amlogic, auge-sound-card";
 		aml-audio-card,name = "AML-AUGESOUND";
-
-		avout_mute-gpios = <&gpio GPIOH_5 GPIO_ACTIVE_HIGH>;
-		spk_mute-gpios = <&gpio GPIOH_8 GPIO_ACTIVE_LOW>;
 
 		aml-audio-card,dai-link@0 {
 			format = "dsp_a";
@@ -492,7 +456,6 @@
 			mclk-fs = <256>;
 			bitclock-master = <&tdmc>;
 			frame-master = <&tdmc>;
-			suffix-name = "alsaPORT-i2s";
 			cpu {
 				sound-dai = <&tdmc>;
 				dai-tdm-slot-tx-mask = <1 1>;
@@ -528,7 +491,6 @@
 				sound-dai = <&dummy_codec>;
 			};
 		};
-
 		aml-audio-card,dai-link@5 {
 			mclk-fs = <128>;
 			continuous-clock;
@@ -583,7 +545,6 @@
 		key_code = <102>;
 		key_val = <108>;
 		key_tolerance = <40>;
-		mboxes = <&mbox_fifo S4_REE2AO_KEYPAD>;
 	};
 
 	gpio_keypad{
@@ -596,6 +557,18 @@
 		key_type = <EV_KEY>;
 		key-gpios = <&gpio  GPIOD_8  GPIO_ACTIVE_HIGH>;
 		detect_mode = <0>;
+	};
+
+	khadas-hwver {
+		compatible = "khadas-hwver";
+		status = "okay";
+        };
+
+	khadas_wdt {
+		compatible = "linux,wdt-khadas";
+		status = "okay";
+		hw_margin_ms = <500>;
+		hw-gpios = <&gpio  GPIOD_10  GPIO_ACTIVE_HIGH>;
 	};
 };
 
@@ -621,7 +594,7 @@
 	status = "okay";
 	pinctrl-names="default";
 	pinctrl-0=<&i2c1_pins2>;
-	clock-frequency = <300000>; 
+	clock-frequency = <300000>;
 
 	khadas-mcu@18 {
 		status = "okay";
@@ -633,7 +606,8 @@
 		fan,trig_temp_level3 = <80>;
 		hwver = "VIM1S.V10";
 	};
-	khadas-rtc {
+
+	khadas-rtc@51 {
 		compatible = "khadas-rtc";
 		reg = <0x51>;
 	};
@@ -686,12 +660,14 @@
 				&clkc CLKID_HIFI_PLL
 				&clkc CLKID_MPLL0>;
 		clock-names = "mclk", "clk_srcpll", "clk_src_cd";
+
 		pinctrl-names = "tdm_pins";
 		pinctrl-0 = <&tdm_a_pins
 			&tdm_d0_pins
 			&tdm_d1_pins
 			&tdma_clk_pins>;
 		src-clk-freq = <1179648000>;
+
 		status = "okay";
 	};
 
@@ -707,16 +683,19 @@
 				&clkc CLKID_MPLL1>;
 		clock-names = "mclk", "mclk_pad", "clk_srcpll", "clk_src_cd";
 		samesource_sel = <3>;
+
 		pinctrl-names = "tdm_pins";
-		pinctrl-0 = <&mclk_2_pins 
-			&tdm_b_pins 
-			&tdm_d4_pins 
-			&tdm_d5_pins 
+		pinctrl-0 = <&mclk_2_pins
+			&tdm_b_pins
+			&tdm_d4_pins
+			&tdm_d5_pins
 			&tdmb_clk_pins>;
 		src-clk-freq = <1179648000>;
-		i2s2hdmi = <1>;
+
 		start_clk_enable = <1>;
+
 		clk_tuning_enable = <1>;
+
 		status = "okay";
 
 		Channel_Mask {
@@ -736,7 +715,9 @@
 				&clkc CLKID_MPLL2>;
 		clock-names = "mclk", "mclk_pad", "clk_srcpll", "clk_src_cd";
 		samesource_sel = <3>;
+
 		start_clk_enable = <1>;
+
 		clk_tuning_enable = <1>;
 		src-clk-freq = <1179648000>;
 		status = "okay";
@@ -763,7 +744,6 @@
 		src-clk-freq = <1179648000>;
 		status = "okay";
 	};
-	
 	spdifb: spdif@1 {
 		compatible = "amlogic, tm2-revb-snd-spdif-b";
 		#sound-dai-cells = <0>;
@@ -776,10 +756,10 @@
 		src-clk-freq = <1179648000>;
 		status = "okay";
 	};
-
 	apdm: pdm {
 		compatible = "amlogic, sm1-snd-pdm";
 		#sound-dai-cells = <0>;
+
 		clocks = <&clkaudio CLKID_AUDIO_GATE_PDM
 			&clkc CLKID_FCLK_DIV3
 			&clkc CLKID_HIFI_PLL
@@ -790,8 +770,11 @@
 			"dclk_srcpll",
 			"pdm_dclk",
 			"pdm_sysclk";
+
 		src-clk-freq = <1179648000>;
+
 		filter_mode = <1>;
+
 		status = "okay";
 	};
 
@@ -812,29 +795,37 @@
 			&clkaudio CLKID_AUDIO_MCLK_F
 			&clkaudio CLKID_AUDIO_RESAMPLE_B>;
 		clock-names = "resample_pll", "resample_src", "resample_clk";
+
 		capture_sample_rate = <16000>;
 		src-clk-freq = <1179648000>;
+
 		status = "disabled";
 	};
 
 	vad:vad {
 		compatible = "amlogic, snd-vad";
 		#sound-dai-cells = <0>;
+
 		clocks = <&clkaudio CLKID_AUDIO_GATE_TOVAD
 			&clkc CLKID_FCLK_DIV5
 			&clkaudio CLKID_AUDIO_VAD>;
 		clock-names = "gate", "pll", "clk";
+
 		interrupts = <GIC_SPI 39 IRQ_TYPE_EDGE_RISING
 				GIC_SPI 44 IRQ_TYPE_EDGE_RISING>;
 		interrupt-names = "irq_wakeup", "irq_frame_sync";
+
 		src = <4>;
+
 		level = <1>;
+
 		status = "okay";
 	};
 
 	loopbacka:loopback@0 {
 		compatible = "amlogic, t5-loopbacka";
 		#sound-dai-cells = <0>;
+
 		clocks = <&clkaudio CLKID_AUDIO_GATE_PDM
 			&clkc CLKID_FCLK_DIV3
 			&clkc CLKID_HIFI_PLL
@@ -849,22 +840,27 @@
 			"pdm_sysclk",
 			"tdminlb_mpll",
 			"tdminlb_mclk";
+
 		datain_src = <4>;
 		datain_chnum = <0>;
 		datain_chmask = <0x0>;
 		datain-lane-mask-in = <0 0 0 0>;
+
 		mclk-fs = <256>;
+
 		datalb_src = <2>;
 		datalb_chnum = <2>;
 		datalb_chmask = <0x3>;
 		datalb-lane-mask-in = <1 0 0 0>;
 		src-clk-freq = <1179648000>;
+
 		status = "okay";
 	};
 
 	loopbackb:loopback@1 {
 		compatible = "amlogic, t5-loopbackb";
 		#sound-dai-cells = <0>;
+
 		clocks = <&clkaudio CLKID_AUDIO_GATE_PDM
 			&clkc CLKID_FCLK_DIV3
 			&clkc CLKID_MPLL3
@@ -879,18 +875,21 @@
 			"pdm_sysclk",
 			"tdminlb_mpll",
 			"tdminlb_mclk";
+
 		mclk-fs = <256>;
+
 		datain_src = <4>;
 		datain_chnum = <4>;
 		datain_chmask = <0xf>;
 		datain-lane-mask-in = <1 0 1 0>;
+
 		datalb_src = <1>;
 		datalb_chnum = <2>;
 		datalb_chmask = <0x3>;
 		datalb-lane-mask-in = <1 0 0 0>;
+
 		status = "disabled";
 	};
-	
 	aed:effect {
 		compatible = "amlogic, snd-effect-v3";
 		#sound-dai-cells = <0>;
@@ -912,6 +911,7 @@
 			function = "tdmouta_lane1";
 		};
 	};
+
 	tdm_d1_pins: tdm_d1_pin {
 		mux {
 			groups = "tdm_d1";
@@ -924,24 +924,21 @@
 			function = "tdm_clk_outa";
 		};
 	};
-	mclk_2_pins: mclk_2_pin {
-		mux { /* GPIOZ_6 */
-			groups = "tdm_mclk2";
-			function = "tdm_clk_outb";
-		};
-	};
+
 	tdm_d4_pins: tdm_d4_pin {
 		mux {
 			groups = "tdm_d4";
 			function = "tdmoutb_lane0";
 		};
 	};
+
 	tdm_d5_pins: tdm_d5_pin {
 		mux {
 			groups = "tdm_d5";
 			function = "tdminb_lane0";
 		};
 	};
+
 	tdmb_clk_pins: tdm_clk_pin {
 		mux {
 			groups = "tdm_sclk2", "tdm_lrclk2";
@@ -960,6 +957,7 @@
 			function = "tdm";
 		};
 	};
+
 	tdm_b_pins: tdm_b_pin {
 		mux { /* GPIOX_11, GPIOX_10, GPIOX_9, GPIOX_8 */
 			groups = "tdm_sclk2",
@@ -969,12 +967,21 @@
 			function = "tdm";
 		};
 	};
+
+	mclk_2_pins: mclk_2_pin {
+		mux { /* GPIOZ_6 */
+			groups = "mclk_2";
+			function = "mclk";
+		};
+	};
+
 	spdifout: spdifout {
 		mux { /* GPIOZ_9 */
 			groups = "spdif_out_z";
 			function = "spdif_out";
 		};
 	};
+
 	spdifout_a_mute: spdifout_a_mute {
 		mux { /* GPIOZ_9 */
 			groups = "GPIOZ_9";
@@ -982,7 +989,8 @@
 			output-low;
 		};
 	};
-}; 
+
+};
 
 &audio_data {
 	status = "okay";
@@ -1082,6 +1090,7 @@
 	pinctrl-0 = <&emmc_pins>, <&emmc_ds_pins>;
 	pinctrl-1 = <&emmc_clk_gate_pins>;
 	pinctrl-names = "default", "clk-gate";
+
 	bus-width = <8>;
 	cap-mmc-highspeed;
 	mmc-ddr-1_8v;
@@ -1089,6 +1098,7 @@
 	max-frequency = <200000000>;
 	non-removable;
 	disable-wp;
+
 };
 
 &saradc {
@@ -1224,4 +1234,3 @@
 	cm_en = <0>;
 	tx_op_color_primary = <0>;
 };
-
