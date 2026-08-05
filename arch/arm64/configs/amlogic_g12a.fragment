@@ -13,3 +13,10 @@
 ## that back /dev/block/by-name/*. Ported from sabrina (sm1_s905d3).
 ## It stands down automatically if LBA1 ever holds a real GPT.
 CONFIG_AMLOGIC_DTS_PARTITION=y
+
+## Recovery image shares the boot kernel and only fits its 24 MiB partition once
+## its 25 MiB cpio is xz rather than gzip - 8,795,168 vs 13,818,493 bytes.
+## BOARD_RAMDISK_USE_XZ (in device/amlogic/common/BoardConfigAmlogic.mk) is set
+## for that; the GKI defconfig only enables RD_GZIP and RD_LZ4, so without this
+## the xz initramfs is unpackable and init never starts.
+CONFIG_RD_XZ=y
