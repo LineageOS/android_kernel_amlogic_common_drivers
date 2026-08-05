@@ -1071,8 +1071,15 @@ static void fiq_debug_addr_init(void)
 	fiq_buf_size = res.result.buf_size;
 	fiq_percpu_size = res.result.percpu_size;
 
-	/* Current ATF version does not support FIQ DEBUG */
-	if (fiq_phy_addr == 0 || fiq_phy_addr == -1) {
+	/*
+	 * Current ATF version does not support FIQ DEBUG. An unimplemented SMC
+	 * returns SMC_UNK in x0, and ATF does not sign-extend it, so on arm64
+	 * phy_addr comes back as 0x00000000ffffffff and the 64-bit -1 test
+	 * below misses it. Reject the 32-bit form too, otherwise we ioremap
+	 * physical 0xffffffff and the memset below raises an SError.
+	 */
+	if (fiq_phy_addr == 0 || fiq_phy_addr == (phys_addr_t)-1 ||
+	    (u32)fiq_phy_addr == 0xffffffff) {
 		WARN(1, "invalid fiq_phy_addr\n");
 		return;
 	}
