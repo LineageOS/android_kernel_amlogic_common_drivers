@@ -6,10 +6,10 @@
 /dts-v1/;
 
 #include "mesonsm1.dtsi"
-#include "mesonsm1_ac200-panel.dtsi"
 #include "mesonsm1_drm.dtsi"
 #include "remote-khadas-12btns.dtsi"
-#include "partition_mbox_ab.dtsi"
+#include "mesonsm1_ac200-panel.dtsi"
+#include "partition_mbox_dynamic_deadpool.dtsi"
 
 / {
 	model = "Khadas VIM3L";
@@ -111,6 +111,12 @@
 			reusable;
 			size = <0x0 0x0>;
 			alignment = <0x0 0x400000>;
+		};
+		/* Referenced by the /bl40 node in mesonsm1.dtsi. */
+		bl40_fw_reserved:linux,bl40 {
+			compatible = "amlogic, mfh";
+			size = <0x0 0x0080000>;
+			reg = <0x0 0x41000000  0x0 0x0080000>;
 		};
 		/* heap-fb backs GRALLOC_USAGE_HW_FB, heap-gfx backs every
 		 * GRALLOC_USAGE_HW_COMPOSER app layer because
@@ -2136,20 +2142,3 @@
 	};
 };
 
-/*
- * Resize two partitions from partition_mbox_ab.dtsi to match the images
- * the Android build actually produces for this board:
- *   vendor_boot: BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE = 64M (dtsi has 24M)
- *   super:       BOARD_SUPER_PARTITION_SIZE = 2200M (dtsi has 2048M)
- */
-&vendor_boot_a {
-	size = <0x0 0x4000000>;
-};
-
-&vendor_boot_b {
-	size = <0x0 0x4000000>;
-};
-
-&super {
-	size = <0x0 0x89800000>;
-};
