@@ -10,6 +10,10 @@ $(MODULE_NAME)-y += meson-gx-mmc.o
 $(MODULE_NAME)-y += meson-g12a-mmc.o
 $(MODULE_NAME)-y += mmc_dtb.o
 $(MODULE_NAME)-y += mmc_key.o
+
+# mmc_dtb.c pulls in block/blk.h and block/partitions/efi.h to open-code
+# add_partition() for the Amlogic MPT table.
+CFLAGS_mmc_dtb.o += -I$(srctree)/block
 $(MODULE_NAME)-$(CONFIG_AMLOGIC_MMC_CQHCI) += meson-cqhci.o
 
 PR_FMT = $(subst amlogic-,,$(MODULE_NAME))

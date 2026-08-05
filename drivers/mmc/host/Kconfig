@@ -17,3 +17,10 @@ config AMLOGIC_MMC_CQHCI
            found on the P1/A5/T5M/*/ family of SoCs.  This controller is
            MMC 5.1 compliant and supports SD, eMMC and SDIO interfaces.
            If you have a controller with this interface, say Y here.
+
+config AMLOGIC_DTS_PARTITION
+         tristate "Amlogic support DTS partition"
+         depends on MMC
+         help
+           This selects support for the Amlogic DTS partition.
+           If you have a controller with this interface, say Y here.
