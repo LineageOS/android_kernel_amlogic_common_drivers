@@ -414,3 +414,11 @@ CONFIG_LTO_CLANG_THIN=y
 # and =m would define CONFIG_AMLOGIC_DTS_PARTITION_MODULE instead.
 # It stands down automatically if LBA1 ever holds a real GPT.
 CONFIG_AMLOGIC_DTS_PARTITION=y
+
+# recovery.img shares the boot kernel (build/make/core/Makefile hardcodes
+# recovery_kernel := $(firstword $(INSTALLED_KERNEL_TARGET))) and only fits its
+# 24 MiB partition once its 25 MiB cpio is xz rather than gzip - 8,795,168 vs
+# 13,818,493 bytes. device/amlogic/common/BoardConfigAmlogic.mk sets
+# BOARD_RAMDISK_USE_XZ for that; the GKI defconfig only enables RD_GZIP and
+# RD_LZ4, so without this the xz initramfs is unpackable and init never starts.
+CONFIG_RD_XZ=y
