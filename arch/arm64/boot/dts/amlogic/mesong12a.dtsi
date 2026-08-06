@@ -1304,6 +1304,12 @@
 		status = "okay";
 	};
 
+	di_process {
+		compatible = "amlogic, di_process";
+		dev_name = "di_process";
+		status = "okay";
+	};
+
 	codec_io: codec_io {
 		compatible = "amlogic, meson-g12a, codec-io";
 		status = "okay";
