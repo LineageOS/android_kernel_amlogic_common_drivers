@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2723c6b4_51de58b4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 17162
+      },
+      "writtenOn": "2026-08-08T03:54:48Z",
+      "side": 1,
+      "message": "Tested playback on sm1 kvim3l",
+      "revId": "945278f1d85d0f2edb5141f37f3563b862557737",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
