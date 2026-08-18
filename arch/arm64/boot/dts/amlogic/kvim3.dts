@@ -88,16 +88,20 @@
 			alignment = <0x0 0x400000>;
 			alloc-ranges = <0x0 0x05000000 0x0 0x400000>;
 		};
-		/* Static reg, not size+alloc-ranges: the u-boot logo framebuffer
-		 * lives at a fixed 0x7f800000 (cmdline logo=osd0,loaded,
-		 * 0x7f800000), and a floating reservation lets another CMA pool
-		 * take that range first -> "failed to allocate memory for node
-		 * 'linux,meson-fb'".
+		/* Static reg, not size+alloc-ranges, so the reservation lands on
+		 * the buffer u-boot already painted the logo into and no other
+		 * CMA pool takes that range first.
+		 *
+		 * VIM3 is NOT VIM3L here: this board's u-boot sets fb_addr to
+		 * 0x3d800000 (board/khadas/configs/kvim3.h) and fixes up the
+		 * memory node to end at 0x78000000, so the 0x7f800000 VIM3L uses
+		 * is past the end of RAM. A reg there reserves pages that have
+		 * no struct page and oopses in cma_activate_area().
 		 */
 		logo_reserved:linux,meson-fb {
 			compatible = "shared-dma-pool";
 			reusable;
-			reg = <0x0 0x7f800000 0x0 0x800000>;
+			reg = <0x0 0x3d800000 0x0 0x800000>;
 		};
 		/* Legacy ion heaps are unused: gralloc's dma_buf_heaps allocator
 		 * takes heap-fb/heap-gfx and only falls back to ion-fb/ion-dev
