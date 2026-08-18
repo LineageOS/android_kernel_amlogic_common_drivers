@@ -975,12 +975,20 @@
 	memory-region = <&adapt_cma_reserved>;
 };
 
+/* Disabled, as on kvim3l: this is the legacy fbdev display path that 4.9
+ * used.  Android 14 drives the display through DRM (aml_drm), and
+ * am_meson_drv_use_osd() checks /meson-fb's status -- when it is okay,
+ * am_meson_drv_probe() diverts to am_meson_drv_probe_prune(), which calls
+ * drm_dev_register() without ever calling drm_mode_config_init().  The
+ * empty (NULL, not self-linked) crtc_list then oopses meson_debugfs_init()
+ * as soon as drm_minor_register() sets up debugfs.
+ */
 &meson_fb {
-	status = "okay";
+	status = "disabled";
 	display_size_default = <1920 1080 1920 2160 32>;
 	mem_size = <0x00800000 0x1980000 0x100000 0x100000 0x800000>;
-	logo_addr = "0x7f800000";
-	mem_alloc = <1>;
+	logo_addr = "0x3d800000";
+	mem_alloc = <0>;
 	pxp_mode = <0>; /** 0:normal mode 1:pxp mode */
 };
 
@@ -990,7 +998,7 @@
 
 &drm_vpu {
 	status = "okay";
-	logo_addr = "0x7f800000";
+	logo_addr = "0x3d800000";
 };
 
 &pwm_ab {
