@@ -145,6 +145,18 @@ config AMLOGIC_SND_SOC_TAS5707
 	  Enable support for Texas Instruments TAS5707 CODEC.
 	  Select this if your TAS5707 is connected via an I2C bus.
 
+config AMLOGIC_SND_SOC_ES8316
+	tristate "Everest Semiconductor ES8316"
+	depends on AMLOGIC_SND_SOC_CODECS
+	depends on I2C
+	default n
+	help
+	  Enable support for the Everest Semiconductor ES8316 CODEC.
+	  Select this if your ES8316 is connected via an I2C bus.
+	  This is the Amlogic/Khadas variant, which adds speaker-enable
+	  GPIO control and SARADC-based headphone jack detection on top
+	  of the mainline everest,es8316 driver.
+
 config AMLOGIC_SND_SOC_TLV320ADC3101
 	tristate "Texas Instruments TLV320ADC3101"
 	depends on AMLOGIC_SND_SOC_CODECS
