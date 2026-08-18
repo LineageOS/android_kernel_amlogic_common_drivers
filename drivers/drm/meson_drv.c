@@ -65,8 +65,14 @@ static int check_reboot_mode(char *str)
 	else
 		skip_logo = 0;
 
+	/*
+	 * "update" is the reboot reason used when entering recovery to apply
+	 * an OTA, so recovery runs with it as well and has no composer to
+	 * program the hdmitx color attribute.
+	 */
 	if (strncmp("factory", str, 7) == 0 ||
-	    strncmp("recovery", str, 8) == 0) {
+	    strncmp("recovery", str, 8) == 0 ||
+	    strncmp("update", str, 6) == 0) {
 		recovery_mode = 1;
 	} else {
 		recovery_mode = 0;
