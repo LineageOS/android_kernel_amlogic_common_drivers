@@ -2089,6 +2089,23 @@ static int meson_hdmitx_encoder_atomic_check(struct drm_encoder *encoder,
 	ret = hdmitx_common_validate_mode_locked(common, &hdmitx_state->hcs,
 						 modename, attr_str, meson_crtc_state->valid_brr,
 						 do_valid);
+	/*
+	 * The color attribute is inherited from the previous state, so it may
+	 * be illegal for the mode being set now (e.g. 420 kept from the uboot
+	 * 4k mode while switching to 1080p, which has no y420 support). Pick a
+	 * valid attribute for the new mode instead of failing the commit.
+	 */
+	if (ret && !meson_crtc_state->uboot_mode_init) {
+		DRM_INFO("%s: [%s-%s] invalid, re-decide color attr\n",
+			 __func__, modename, attr_str);
+		meson_hdmitx_decide_color_attr(common, meson_crtc_state,
+					       attr, sequence_id);
+		build_hdmitx_attr_str(attr_str, attr->colorformat, attr->bitdepth);
+		ret = hdmitx_common_validate_mode_locked(common, &hdmitx_state->hcs,
+							 modename, attr_str,
+							 meson_crtc_state->valid_brr,
+							 do_valid);
+	}
 	if (ret) {
 		DRM_ERROR("validate_mode fail for [%s-%s]\n", modename, attr_str);
 		return -EINVAL;
