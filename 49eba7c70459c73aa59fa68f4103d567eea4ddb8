@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "245dfe39_c040e933",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 17162
+      },
+      "writtenOn": "2026-08-18T10:59:17Z",
+      "side": 1,
+      "message": "faced bug on kvim3l and verified fix here. Need to check other soc yet",
+      "revId": "49eba7c70459c73aa59fa68f4103d567eea4ddb8",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
