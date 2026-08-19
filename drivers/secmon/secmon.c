@@ -56,17 +56,39 @@ static long get_sharemem_info(unsigned int function_id)
 	return res.a0;
 }
 
+/*
+ * A BL31 that does not implement the inout-size SMC answers SMC_UNK, which for
+ * an SMC32 call lands in res.a0 as 0x00000000ffffffff -- not equal to -1 as an
+ * unsigned long, so the old "!= -1" test let it through and the bogus size was
+ * used verbatim. ram_vmap() then tried to build a 4GB page array and failed,
+ * taking secmon (and therefore cpu_info, and therefore every
+ * get_meson_cpu_version() caller in the media stack) down with it.
+ * Only accept a size that could plausibly be a share-mem window.
+ */
+#define SHAREMEM_SIZE_MAX	0x100000
+
+static bool sharemem_size_valid(unsigned long size)
+{
+	return size && size != (unsigned long)-1 && size <= SHAREMEM_SIZE_MAX;
+}
+
 static void get_sharemem_size(unsigned int function_id)
 {
 	struct arm_smccc_res res;
 
 	arm_smccc_smc(function_id, 1, 0, 0, 0, 0, 0, 0, &res);
-	if (res.a0 != -1)
+	if (sharemem_size_valid(res.a0))
 		sharemem_in_size =  res.a0;
+	else
+		pr_warn("bad share mem in size 0x%lx from smc %#x, keep 0x%x\n",
+			res.a0, function_id, sharemem_in_size);
 
 	arm_smccc_smc(function_id, 2, 0, 0, 0, 0, 0, 0, &res);
-	if (res.a0 != -1)
+	if (sharemem_size_valid(res.a0))
 		sharemem_out_size =  res.a0;
+	else
+		pr_warn("bad share mem out size 0x%lx from smc %#x, keep 0x%x\n",
+			res.a0, function_id, sharemem_out_size);
 }
 
 #define RESERVE_MEM_SIZE	0x300000
@@ -242,6 +264,9 @@ static int secmon_probe(struct platform_device *pdev)
 		test_access_secmon();
 #endif
 	}
+
+	pr_info("share mem in 0x%lx/0x%x, out 0x%lx/0x%x\n",
+		phy_in_base, sharemem_in_size, phy_out_base, sharemem_out_size);
 
 	sharemem_in_base = ram_vmap(phy_in_base, sharemem_in_size);
 	if (!sharemem_in_base) {
