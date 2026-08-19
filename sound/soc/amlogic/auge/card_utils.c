@@ -153,9 +153,15 @@ int aml_card_parse_dai(struct device_node *node,
 	if (dai_name) {
 		ret = snd_soc_of_get_dai_name(node, dai_name);
 		if (ret < 0) {
-			pr_err("%s, node=%p failed to get dai name:%s\n",
-			       __func__, node,
-			       *dai_name);
+			/*
+			 * Report the real errno: a sound-dai pointing at a
+			 * disabled or not-yet-probed node comes back as
+			 * -EPROBE_DEFER here, and flattening that to -EINVAL
+			 * makes the card abort with no hint as to which node
+			 * is at fault.
+			 */
+			pr_err("%s, node=%pOF failed to get dai name, ret %d\n",
+			       __func__, node, ret);
 			return -EINVAL;
 		}
 	}
