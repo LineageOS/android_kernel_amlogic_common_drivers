@@ -1671,27 +1671,27 @@
 };
 
 &ext_mdio {
+	status = "okay";
+
 	external_phy: ethernet-phy@0 {
 		reg = <0>;
 		max-speed = <1000>;
-		reset-assert-us = <20000>;
-		reset-deassert-us = <50000>;
 	};
 };
 
-/* Onboard gigabit PHY is an external RTL8211F on RGMII, not the internal EPHY. */
 &ethmac {
+	compatible = "amlogic,meson-g12a-dwmac",
+			"snps,dwmac-3.70a",
+			"snps,dwmac";
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&external_eth_pins>;
 	phy-mode = "rgmii";
 	phy-handle = <&external_phy>;
+	amlogic,tx-delay-ns = <2>;
+	rx-internal-delay-ps = <200>;
+	mc_val = <0x1621>;
 	internal_phy = <0>;
-
-	mc_val = <0x1629>;
-	cali_val = <0x60000>;
-	rx_delay = <1>;
-	auto_cali_idx = <0>;
 };
 
 /*
