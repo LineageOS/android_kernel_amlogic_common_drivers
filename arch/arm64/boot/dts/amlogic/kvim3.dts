@@ -658,21 +658,13 @@
 			};
 		};
 
-		aml-audio-card,dai-link@3 {
-			mclk-fs = <64>;
-			/* suffix-name, sync with android audio hal
-			 * what's the dai link used for
-			 */
-			suffix-name = "alsaPORT-pdm";
-			cpu {
-				sound-dai = <&aml_pdm>;
-			};
-			codec {
-				sound-dai = <&pdm_codec>;
-			};
-		};
+		/* No dai-link for PDM: aml_pdm is disabled (no PDM microphone on
+		 * the VIM3). A dai-link whose cpu sound-dai points at a disabled
+		 * node makes aml_card_parse_cpu() fail with -EINVAL, which aborts
+		 * the whole card -- including the links HDMI audio needs.
+		 */
 
-		aml-audio-card,dai-link@4 {
+		aml-audio-card,dai-link@3 {
 			mclk-fs = <128>;
 			/* suffix-name, sync with android audio hal
 			 * what's the dai link used for
@@ -687,7 +679,7 @@
 			};
 		};
 
-		aml-audio-card,dai-link@5 {
+		aml-audio-card,dai-link@4 {
 			mclk-fs = <128>;
 			continuous-clock;
 			/* suffix-name, sync with android audio hal
@@ -703,7 +695,7 @@
 			};
 		};
 
-		aml-audio-card,dai-link@6 {
+		aml-audio-card,dai-link@5 {
 			mclk-fs = <256>;
 			continuous-clock;
 			suffix-name = "alsaPORT-loopback";
