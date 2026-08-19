@@ -1686,10 +1686,19 @@
 	pinctrl-0 = <&external_eth_pins>;
 	phy-mode = "rgmii";
 	phy-handle = <&external_phy>;
-	internal_phy = <0>;
+	/*
+	 * 1:inphy, 2:exphy -- the encoding dwmac-meson8b.c documents and acts
+	 * on. The 4.9 BSP driver tested "internal_phy == 1" and treated
+	 * everything else as external, so the 4.9 dts said 0; carrying that 0
+	 * over here means aml_custom_setting() takes neither branch and never
+	 * writes cali_val to PRG_ETH1, leaving the RGMII RX clock delay at 0.
+	 * The PHY still negotiates 1Gbps over the wire and MDIO still works,
+	 * but no frames are sampled correctly -- link up, no DHCP.
+	 */
+	internal_phy = <2>;
 
-	mc_val = <0x1629>;
-	cali_val = <0x60000>;
+	mc_val = <0x1629>;		/* PRG_ETH0: RGMII, TXDLY 1 (2ns) */
+	cali_val = <0x60000>;		/* PRG_ETH1: CFG_RXCLK_DLY = 6 */
 	rx_delay = <1>;
 	auto_cali_idx = <0>;
 };
