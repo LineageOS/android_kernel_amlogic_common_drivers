@@ -1,0 +1,55 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Google ADT-3 (deadpool), Amlogic S905Y2 (G12A).
+ *
+ * Shared board description is in g12a_s905y2_common.dtsi.
+ */
+
+/dts-v1/;
+
+#include "g12a_s905y2_common.dtsi"
+
+/ {
+	model = "Google ADT-3";
+
+	memory@00000000 {
+		device_type = "memory";
+		linux,usable-memory = <0x0 0x000000 0x0 0x80000000>;
+	};
+
+	gpioleds {
+		compatible = "gpio-leds";
+		status = "okay";
+
+		green {
+			label = "green";
+			gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
+		};
+
+		red {
+			label = "red";
+			gpios = <&gpio_ao GPIOAO_4 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+	};
+
+	gpio_keypad {
+		compatible = "amlogic, gpio_keypad";
+		status = "okay";
+		scan_period = <20>;
+		key_num = <1>;
+		key_name = "bt_pair";
+		key_code = <218>;
+		key-gpios = <&gpio_ao GPIOAO_3 GPIO_ACTIVE_HIGH>;
+		detect_mode = <0>;	/* 0:polling, 1:irq */
+	};
+};
+
+/*
+ * AP6356-class BCM4356.
+ * The 4.9 board file drove its out-of-band irq active high.
+ */
+&aml_wifi {
+	irq_trigger_type = "IRQF_TRIGGER_HIGH";
+};
