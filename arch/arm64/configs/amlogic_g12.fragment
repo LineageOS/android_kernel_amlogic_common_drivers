@@ -1,0 +1,19 @@
+# CONFIG_RTC_DRV_HYM8563 is not set
+
+## Reduce kernel image size (boot is a 16 MiB non-A/B partition shared with the
+## ramdisk and dtb), as the vendor sm1_s905d3 config sabrina_fragment.defconfig does.
+## NB: sabrina also clears CONFIG_KALLSYMS_ALL, but we cannot: amlogic_gki.fragment
+## sets CONFIG_AMLOGIC_USER_FAULT=m, and drivers/memory_ext/user_fault.c compiles its
+## whole module tail (module_init/MODULE_LICENSE) and its aml_init_mm lookup under
+## "#if IS_MODULE(CONFIG_AMLOGIC_USER_FAULT) && IS_ENABLED(CONFIG_KALLSYMS_ALL)".
+## Without KALLSYMS_ALL it falls back to the unexported &init_mm and loses its license.
+# CONFIG_DEBUG_INFO is not set
+
+## U-boot writes an Amlogic MPT partition table at 36 MiB, not a GPT, so the stock
+## EFI/MSDOS parsers find nothing on mmcblk0 and init times out waiting for
+## boot/metadata/super/vbmeta. This parses the MPT and creates the named partitions
+## that back /dev/block/by-name/*. Ported from sabrina (sm1_s905d3).
+## It stands down automatically if LBA1 ever holds a real GPT.
+CONFIG_AMLOGIC_DTS_PARTITION=y
+
+# CONFIG_AMLOGIC_RFKILL_INIT_SW_UNBLOCK is not set
