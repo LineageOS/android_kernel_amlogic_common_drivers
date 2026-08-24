@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Radxa Zero (RADXA-ZERO), Amlogic S905Y2 (G12A), 4 GB variant.
+ *
+ * Shared board description is in g12a_s905y2_common.dtsi.
+ */
+
+/dts-v1/;
+
+#include "g12a_s905y2_common.dtsi"
+
+/ {
+	model = "Radxa Zero";
+
+	/*
+	 * The deadpool reference puts a green LED on GPIOAO_2 and a red one on
+	 * GPIOAO_4; neither is wired that way here, so the node stays empty and
+	 * disabled rather than driving header pins.
+	 */
+	gpioleds {
+		compatible = "gpio-leds";
+		status = "disabled";
+	};
+};
+
+/ {
+	memory@00000000 {
+		device_type = "memory";
+		linux,usable-memory = <0x0 0x000000 0x0 0xf4ffffff>;
+	};
+};
+
+/* Boot-mode button / 40-pin header ADC lines. */
+&saradc {
+	status = "okay";
+};
+
+/*
+ * The BCM43456 on this board cannot do sdr104: with it set the SDIO instance
+ * fails CMD52 with CRC errors and the part never enumerates -
+ *     meson-g12a-mmc ffe05000.sd2: 52 [0x20000], CRC[0x2400]
+ *     mmc2: error -84 whilst initialising SDIO card
+ * High speed works. Mainline's meson-g12a-radxa-zero.dts runs it at sdr50.
+ */
+&sd_emmc_b2 {
+	/delete-property/ sd-uhs-sdr104;
+};
