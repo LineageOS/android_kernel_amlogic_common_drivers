@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Radxa Zero (RADXA-ZERO), Amlogic S905Y2 (G12A), 2 GB variant.
+ */
+
+/dts-v1/;
+
+#include "g12a_s905y2_radxa0.dtsi"
+
+/ {
+	memory@00000000 {
+		device_type = "memory";
+		linux,usable-memory = <0x0 0x000000 0x0 0x80000000>;
+	};
+};
