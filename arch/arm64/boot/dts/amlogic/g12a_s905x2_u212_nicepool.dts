@@ -470,6 +470,20 @@
 	 * };
 	 */
 
+	gpio_keypad {
+		compatible = "amlogic, gpio_keypad";
+		status = "okay";
+		scan_period = <20>;
+		key_num = <1>;
+		key_name = "bt_pair";
+		key_code = <218>;
+		key-gpios = <&gpio_ao GPIOAO_3 GPIO_ACTIVE_HIGH>;
+		interrupts = <0 70 1
+			      0 71 2>;
+		interrupt-names = "irq_keyup", "irq_keydown";
+		detect_mode = <1>; /*0:polling mode, 1:irq mode*/
+	};
+
 	unifykey{
 		compatible = "amlogic,unifykey";
 		status = "ok";
