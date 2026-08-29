@@ -42,6 +42,7 @@ dtb-y += t5m_reva_t963d4_ay301_2g.dtb
 dtb-y += t5m_reva_t963d4_ay301_3g.dtb
 dtb-y += t5m_reva_t963d4_ay309_2g.dtb
 dtb-y += t5m_reva_t963d4_ay309_3g.dtb
+dtb-y += g12a_s905x2_u212_nicepool.dtb
 dtb-y += g12a_s905y2_deadpool.dtb
 dtb-y += g12b_a311d_w400.dtb
 dtb-y += g12b_a311d_w400_x96x9.dtb
