@@ -467,6 +467,20 @@ void emmc_key_init(struct mmc_card *card, int *retp)
 	u64  lba_start = 0, lba_end = 0;
 	int bit = 0;
 
+	*retp = 0;
+
+	/*
+	 * add_dtbkey() and aml_emmc_partition_ops() both call us for the
+	 * same card.  The first call may fail when pt_fmt is not yet
+	 * allocated (get_reserve_partition_off_from_tbl() returns -1); the
+	 * second succeeds.  If both succeed, the second kmalloc leaks the
+	 * first emmckey_info.  Guard against re-init.
+	 */
+	if (mmc_card_key == card && emmckey_info && emmckey_info->key_init) {
+		pr_info("%s: already initialised\n", __func__);
+		return;
+	}
+
 	mmc_claim_host(card->host);
 	bit = card->csd.read_blkbits;
 	pr_debug("card key: card_blk_probe.\n");
@@ -524,9 +538,11 @@ void emmc_key_init(struct mmc_card *card, int *retp)
 	mutex_unlock(&uk_mmc.unifykey_mutex);
 
 	pr_info("emmc key: %s:%d ok.\n", __func__, __LINE__);
+	goto exit;
 
 exit_err:
 		kfree(emmckey_info);
+		emmckey_info = NULL;
 exit:
 		mmc_release_host(card->host);
 }
