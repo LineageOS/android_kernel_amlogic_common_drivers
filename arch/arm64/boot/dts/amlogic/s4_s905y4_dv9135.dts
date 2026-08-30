@@ -391,7 +391,7 @@
 	unifykey{
 		compatible = "amlogic,unifykey";
 		status = "ok";
-		unifykey-num = <19>;
+		unifykey-num = <21>;
 		unifykey-index-0 = <&keysn_0>;
 		unifykey-index-1 = <&keysn_1>;
 		unifykey-index-2 = <&keysn_2>;
@@ -411,6 +411,8 @@
 		unifykey-index-16= <&keysn_16>;
 		unifykey-index-17= <&keysn_17>;
 		unifykey-index-18= <&keysn_18>;
+		unifykey-index-19= <&keysn_19>;
+		unifykey-index-20= <&keysn_20>;
 
 		keysn_0: key_0{
 			key-name = "usid";
@@ -507,6 +509,16 @@
 		};
 		keysn_18:key_18{
 			key-name = "oemkey";
+			key-device = "normal";
+			key-permit = "read","write","del";
+		};
+		keysn_19:key_19{
+			key-name = "nfxoemmodel";
+			key-device = "normal";
+			key-permit = "read","write","del";
+		};
+		keysn_20:key_20{
+			key-name = "facAutoAging";
 			key-device = "normal";
 			key-permit = "read","write","del";
 		};
@@ -717,27 +729,84 @@
 	adc_keypad {
 		compatible = "amlogic, adc_keypad";
 		status = "okay";
-		key_name = "standby", "vol+", "vol-";
-		key_num = <3>;
+		key_name = "recovery";
+		key_num = <1>;
 		io-channels = <&saradc 0>;
 		io-channel-names = "key-chan-0";
-		key_chan = <0 0 0>;
-		key_code = <116 115 114>;
-		key_val = <20 910 630>; //val=voltage/1800mV*1023
-		key_tolerance = <40 40 40>;
+		key_chan = <0>;
+		key_code = <212>;
+		key_val = <40>; //val=voltage/1800mV*1023
+		key_tolerance = <50>;
 	};
 
 	gpio_keypad{
 		compatible = "amlogic, gpio_keypad";
 		status = "okay";
 		scan_period = <20>;
-		key_num = <2>;
-		key_name = "bluetooth", "mute";
-		key_code = <600 SW_MUTE_DEVICE>;
-		key_type = <EV_KEY EV_SW>;
-		key-gpios = <&gpio  GPIOD_2  GPIO_ACTIVE_HIGH
-			     &gpio  GPIOD_3  GPIO_ACTIVE_HIGH>;
+		key_num = <1>;
+		key_name = "power";
+		key_code = <116>;
+		key_type = <1>;
+		key-gpios = <&gpio  GPIOD_2  GPIO_ACTIVE_HIGH>;
 		detect_mode = <0>;/*0:polling mode, 1:irq mode*/
+	};
+
+	ir_wakeup_key {
+		key_num = <12>;
+		wakeup_key = <
+			0xba45bd02 0x00 0x74
+			0xef10fe01 0x00 0x74
+			0xef10fb04 0x00 0x74
+			0xf20dfe01 0x00 0x74
+			0xe51afb04 0x00 0x74
+			0xde217788 0x00 0x74
+			0xf50af708 0x00 0x74
+			0xb14ef708 0x01 0x85
+			0x8f70f708 0x00 0x70
+			0xb8477788 0x00 0x66
+			0xf30cf708 0x00 0xac
+			0x9c637788 0x00 0xbb
+		>;
+	};
+
+	custom_maps: custom_maps {
+		map_num = <1>;
+		map0 = <&map_0>;
+		map_0: map_0 {
+			mapname = "amlogic-remote-1";
+			customcode = <0xf708>;
+			release_delay = <80>;
+			size = <60>;
+			keymap = <
+				0x10000b 0x110002 0x120003 0x130004 0x140005
+				0x150006 0x160007 0x170008 0x180009 0x19000a
+				0x1f001c 0x20003d 0x50003e 0x40003f 0x4d0040
+				0x960041 0x290042 0x770043 0x780044 0x880057
+				0x30000e 0x060082 0x280083 0x000067 0x01006c
+				0x030069 0x02006a 0x53007d 0x510068 0x52006d
+				0x070077 0x98007a 0x59007b 0x1b0078 0x040079
+				0x0a0074 0x81000f 0x0d0071 0x0c00ac 0x1e0084
+				0x800085 0x950086 0x540087 0x790088 0x4f001e
+				0x970030 0x92002e 0x4c0020 0x930089 0x1c009e
+				0x580073 0x5d0072 0x05018e 0x09018f 0x420190
+				0x430191 0x1a008b 0x4400a8 0x4500d0 0x55008c
+			>;
+		};
+	};
+
+	fd650s {
+		compatible = "amlogic,fd650", "ref, fd650s";
+		dev_name = "fd650s";
+		status = "okay";
+	};
+
+	gpioctrl {
+		compatible = "ref, gpioctrl";
+		dev_name = "gpioctrl";
+		status = "okay";
+		sys_led = <&gpio GPIOD_11 GPIO_ACTIVE_LOW>;
+		net_led = <&gpio GPIOD_4 GPIO_ACTIVE_LOW>;
+		sys_led_green = <&gpio GPIOD_10 GPIO_ACTIVE_HIGH>;
 	};
 };
 
@@ -1287,7 +1356,7 @@
 &dwc2_a {
 	status = "okay";
 	/** 0: normal, 1: otg+dwc3 host only, 2: otg+dwc3 device only*/
-	controller-type = <3>;
+	controller-type = <1>;
 };
 
 &crg {
