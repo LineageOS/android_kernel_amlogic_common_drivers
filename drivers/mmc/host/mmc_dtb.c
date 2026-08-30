@@ -37,6 +37,7 @@
 #include <linux/device.h>
 #include <linux/uaccess.h>
 #include <linux/vmalloc.h>
+#include <linux/property.h>
 #include <linux/amlogic/aml_sd.h>
 #include "mmc_common.h"
 #ifdef CONFIG_AMLOGIC_DTS_PARTITION
@@ -469,6 +470,21 @@ int get_reserve_partition_off_from_tbl(void)
 void amlmmc_dtb_init(struct mmc_card *card, int *retp)
 {
 	*retp = 0;
+
+	/*
+	 * add_dtbkey() (meson-gx-mmc.c) schedules a delayed work that calls
+	 * emmc_key_init()/amlmmc_dtb_init() as soon as mmc->card appears.
+	 * aml_emmc_partition_ops() (mmc_blk_probe) also calls both for the
+	 * same card.  The first caller registers the chardev/class; the
+	 * second must not retry or class_create() hits a duplicate-name
+	 * -EEXIST, which propagates up and aborts aml_emmc_partition_ops()
+	 * before the aml_store sysfs attributes are created.
+	 */
+	if (card_dtb == card) {
+		pr_info("%s: dtb chardev already registered\n", __func__);
+		return;
+	}
+
 	mmc_claim_host(card->host);
 
 	/*
