@@ -6,9 +6,9 @@
 /dts-v1/;
 
 #include "mesong12b.dtsi"
-#include "mesong12b_w400-panel.dtsi"
 #include "mesong12b_drm.dtsi"
-#include "partition_normal_linux.dtsi"
+#include "remote-khadas-12btns.dtsi"
+#include "partition_mbox_dynamic_deadpool.dtsi"
 
 / {
 	amlogic-dt-id = "g12b_w400_a";
@@ -34,10 +34,6 @@
 		spi2 = &spicc1;
 	};
 
-	memory@00000000 {
-		device_type = "memory";
-		linux,usable-memory = <0x0 0x000000 0x0 0x80000000>;
-	};
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
@@ -82,14 +78,12 @@
 		logo_reserved:linux,meson-fb {
 			compatible = "shared-dma-pool";
 			reusable;
-			size = <0x0 0x800000>;
-			alignment = <0x0 0x400000>;
-			alloc-ranges = <0x0 0x7f800000 0x0 0x800000>;
+			reg = <0x0 0x3d800000 0x0 0x800000>;
 		};
 		ion_cma_reserved:linux,ion-dev {
 			compatible = "shared-dma-pool";
 			reusable;
-			size = <0x0 0x3400000>;
+			size = <0x0 0x0>;
 			alignment = <0x0 0x400000>;
 			no-kernel-map;
 		};
@@ -99,18 +93,25 @@
 			size = <0x0 0x0>;
 			alignment = <0x0 0x400000>;
 		};
-		dmaheap_cma_reserved:heap-gfx {
-			compatible = "shared-dma-pool";
-			reusable;
-			size = <0x0 0x3400000>;
-			alignment = <0x0 0x400000>;
-		};
 		dmaheap_fb_reserved:heap-fb {
 			compatible = "shared-dma-pool";
 			reusable;
+			size = <0x0 0x3800000>;
+			alignment = <0x0 0x400000>;
+		};
+		dmaheap_cma_reserved:heap-gfx {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x0 0x5800000>;
+			alignment = <0x0 0x400000>;
+		};
+		dmaheap_secure_reserved:heap-secure {
+			compatible = "amlogic, heap-secure-mem";
+			no-map;
 			size = <0x0 0x0>;
 			alignment = <0x0 0x400000>;
 		};
+
 
 		//di_reserved:linux,di {
 			//compatible = "amlogic, di-mem";
@@ -179,7 +180,7 @@
 		isp_cma_reserved:linux,isp_cma {
 			compatible = "shared-dma-pool";
 			reusable;
-			status = "okay";
+			status = "disable";
 			size = <0x0 0x5400000>;
 			alignment = <0x0 0x400000>;
 		};
@@ -282,7 +283,7 @@
 		pps-enable = <1>;
 	};
 	multi-di {
-		compatible = "amlogic, amlogic, dim-g12b";
+		compatible = "amlogic, dim-g12b";
 		status = "okay";
 		/* 0:use reserved; 1:use cma; 2:use cma as reserved */
 		flag_cma = <4>;	//<1>;
@@ -352,7 +353,7 @@
 	unifykey{
 		compatible = "amlogic,unifykey";
 		status = "ok";
-		unifykey-num = <15>;
+		unifykey-num = <16>;
 		unifykey-index-0 = <&keysn_0>;
 		unifykey-index-1 = <&keysn_1>;
 		unifykey-index-2 = <&keysn_2>;
@@ -368,6 +369,7 @@
 		unifykey-index-12= <&keysn_12>;
 		unifykey-index-13= <&keysn_13>;
 		unifykey-index-14= <&keysn_14>;
+		unifykey-index-16= <&keysn_16>;
 
 		keysn_0: key_0{
 			key-name = "usid";
@@ -445,6 +447,11 @@
 		keysn_14:key_14{
 			key-name = "netflix_mgkid";
 			key-device = "secure";
+			key-permit = "read","write","del";
+		};
+		keysn_16:key_16{
+			key-name = "eth_exphy_para";
+			key-device = "normal";
 			key-permit = "read","write","del";
 		};
 	};//End unifykey
@@ -540,7 +547,7 @@
 		aml-audio-card,dai-link@1 {
 			format = "i2s";
 			mclk-fs = <256>;
-			//continuous-clock;
+			continuous-clock;
 			//bitclock-inversion;
 			//frame-inversion;
 			bitclock-master = <&aml_tdmb>;
@@ -560,7 +567,7 @@
 				system-clock-frequency = <12288000>;
 			};
 			tdmbcodec: codec {
-				sound-dai = <&amlogic_codec &ad82584f_62>;
+				sound-dai = <&amlogic_codec>;
 			};
 		};
 
@@ -605,6 +612,7 @@
 
 		aml-audio-card,dai-link@4 {
 			mclk-fs = <128>;
+			continuous-clock;
 			/* suffix-name, sync with android audio hal
 			 * what's the dai link used for
 			 */
@@ -857,7 +865,7 @@
 
 	sensor: sensor {
 		compatible = "soc, sensor";
-		status = "okay";
+		status = "disabled";
 		sensor-name = "imx290"; /*imx290;os08a10;imx227*/
 		pinctrl-names="default";
 		pinctrl-0=<&clk12_24_z_pins>;
@@ -870,7 +878,7 @@
 
 	iq: iq {
 		compatible = "soc, iq";
-		status = "okay";
+		status = "disabled";
 		sensor-name = "imx290"; /*imx290;os08a10;imx227*/
 	};
 	lens: lens {
@@ -880,7 +888,7 @@
 }; /* end of / */
 
 &i2c2 {
-	status = "okay";
+	status = "disabled";
 	pinctrl-names="default";
 	pinctrl-0=<&i2c2_master_pins2>;
 	clock-frequency = <100000>; /* default 100k */
@@ -896,7 +904,7 @@
 };
 
 &isp {
-	status = "okay";
+	status = "disabled";
 	temper-line-offset = <0x1680>;
 	temper-buf-size = <12>;
 	temper-frame-num = <1>;
@@ -914,7 +922,7 @@
 	status = "disable";
 	display_size_default = <1920 1080 1920 2160 32>;
 	mem_size = <0x00800000 0x1980000 0x100000 0x100000 0x800000>;
-	logo_addr = "0x7f800000";
+	logo_addr = "0x3d800000";
 	mem_alloc = <1>;
 	pxp_mode = <0>; /** 0:normal mode 1:pxp mode */
 };
@@ -969,7 +977,7 @@
 		compatible = "ESMT, ad82584f";
 		#sound-dai-cells = <0>;
 		reg = <0x31>;
-		status = "okay";
+		status = "disabled";
 		reset_pin = <&gpio GPIOA_5 0>;
 	};
 
@@ -1518,13 +1526,31 @@
 &dwc2_a {
 	status = "okay";
 	/** 0: normal, 1: otg+dwc3 host only, 2: otg+dwc3 device only*/
-	controller-type = <3>;
+	controller-type = <2>;
+};
+
+&ext_mdio {
+	status = "okay";
+
+	external_phy: ethernet-phy@0 {
+		reg = <0>;
+		max-speed = <1000>;
+	};
 };
 
 &ethmac {
+	compatible = "amlogic,meson-g12a-dwmac",
+		     "snps,dwmac-3.70a",
+		     "snps,dwmac";
 	status = "okay";
-	phy-handle = <&internal_ephy>;
-	phy-mode = "rmii";
+	pinctrl-names = "default";
+	pinctrl-0 = <&external_eth_pins>;
+	phy-mode = "rgmii";
+	phy-handle = <&external_phy>;
+	amlogic,tx-delay-ns = <2>;
+	rx-internal-delay-ps = <200>;
+	mc_val = <0x1621>;
+	internal_phy = <0>;
 };
 
 &uart_A {
