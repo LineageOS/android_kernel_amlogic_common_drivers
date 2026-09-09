@@ -1,0 +1,44 @@
+/* X96 X9 (A311D) 23-button IR remote (no mute key), NEC custom code 0xfe01.
+   Extracted from map_1 ("amlogic-remote-2") in g12b_a311d_w200_x96x9.dts */
+
+#include <dt-bindings/input/input.h>
+
+&custom_maps {
+		mapnum = <1>;
+		map0 = <&map_0>;
+		map_0: map_0{
+			mapname = "x96x9-ir";
+			customcode = <0xfe01>;
+			release_delay = <80>;
+			fn_key_scancode = <0x00>;
+			cursor_left_scancode = <0x51>;
+			cursor_right_scancode = <0x50>;
+			cursor_up_scancode = <0x16>;
+			cursor_down_scancode = <0x1a>;
+			cursor_ok_scancode = <0x13>;
+			size  = <23>;   /*keymap size*/
+			keymap = <REMOTE_KEY(0x40, KEY_POWER)
+				REMOTE_KEY(0x16, KEY_UP)
+				REMOTE_KEY(0x1a, KEY_DOWN)
+				REMOTE_KEY(0x51, KEY_LEFT)
+				REMOTE_KEY(0x50, KEY_RIGHT)
+				REMOTE_KEY(0x13, KEY_ENTER)
+				REMOTE_KEY(0x11, KEY_HOME)
+				REMOTE_KEY(0x4c, KEY_LEFTMETA)
+				REMOTE_KEY(0x19, KEY_BACK)
+				REMOTE_KEY(0x10, KEY_VOLUMEDOWN)
+				REMOTE_KEY(0x18, KEY_VOLUMEUP)
+				REMOTE_KEY(0x4e, KEY_1)
+				REMOTE_KEY(0x0d, KEY_2)
+				REMOTE_KEY(0x0c, KEY_3)
+				REMOTE_KEY(0x4a, KEY_4)
+				REMOTE_KEY(0x09, KEY_5)
+				REMOTE_KEY(0x08, KEY_6)
+				REMOTE_KEY(0x46, KEY_7)
+				REMOTE_KEY(0x05, KEY_8)
+				REMOTE_KEY(0x04, KEY_9)
+				REMOTE_KEY(0x01, KEY_0)
+				REMOTE_KEY(0x00, KEY_RIGHTALT)
+				REMOTE_KEY(0x42, KEY_BACKSPACE)>;
+		};
+};
