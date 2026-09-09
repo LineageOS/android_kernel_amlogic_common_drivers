@@ -2,7 +2,7 @@
 
 config KHADAS_MCU
 	tristate "Khadas MCU"
-	default m
+	default n
 	help
 	  This driver is for Khadas MCU.
 	  Control fan && WoL, and the power for CPU
