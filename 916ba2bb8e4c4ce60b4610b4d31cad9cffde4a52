@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5fce7239_1c025d1a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 17162
+      },
+      "writtenOn": "2026-09-10T13:18:56Z",
+      "side": 1,
+      "message": "need testing on devices with external (1gbps) phy. Tested on x96x9 which is alsmost w200 / w400 board, probably needed by other external phy devices.",
+      "revId": "916ba2bb8e4c4ce60b4610b4d31cad9cffde4a52",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
