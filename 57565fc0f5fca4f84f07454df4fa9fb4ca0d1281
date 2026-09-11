@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d485e7b3_f53733cb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 17162
+      },
+      "writtenOn": "2026-09-11T03:18:31Z",
+      "side": 1,
+      "message": "works now with built-in 1Gbps eth",
+      "revId": "57565fc0f5fca4f84f07454df4fa9fb4ca0d1281",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
