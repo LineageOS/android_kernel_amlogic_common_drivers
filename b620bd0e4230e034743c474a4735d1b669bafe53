@@ -16,6 +16,24 @@
       "message": "doesnt fix ethernet on vim3, bootloader overrides internal_phy\u003d0, need more work",
       "revId": "b620bd0e4230e034743c474a4735d1b669bafe53",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "46ff50d6_11e92113",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-09-12T14:54:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "de378198_fd6c349f",
+      "revId": "b620bd0e4230e034743c474a4735d1b669bafe53",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
