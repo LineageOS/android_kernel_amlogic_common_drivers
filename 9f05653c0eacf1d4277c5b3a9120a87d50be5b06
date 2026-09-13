@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a856185a_d5a581af",
+        "filename": "arch/arm64/configs/kvim3_defconfig",
+        "patchSetId": 29
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-09-13T10:11:11Z",
+      "side": 1,
+      "message": "By the way, isn\u0027t this applicable to all khadas boards?",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 24
+      },
+      "revId": "9f05653c0eacf1d4277c5b3a9120a87d50be5b06",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
