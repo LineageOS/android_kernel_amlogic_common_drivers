@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2778f87d_f8d1c9e5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 17162
+      },
+      "writtenOn": "2026-09-13T05:56:52Z",
+      "side": 1,
+      "message": "verified for boot on kvim1s. boots fine, wifi works, ethernet works",
+      "revId": "4adc533fca5f0fa3216a278ccf6aa05a224673d4",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "abdb538d_695c7685",
