@@ -22,6 +22,54 @@
       },
       "revId": "4adc533fca5f0fa3216a278ccf6aa05a224673d4",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c706b2ed_c5c8af93",
+        "filename": "arch/arm64/configs/amlogic_ne.fragment",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-09-13T01:51:55Z",
+      "side": 1,
+      "message": "Comment removed by: Bruno Martins; Reason: Duplicate",
+      "parentUuid": "abdb538d_695c7685",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 50
+      },
+      "revId": "4adc533fca5f0fa3216a278ccf6aa05a224673d4",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f6b1ac0_7abfb356",
+        "filename": "arch/arm64/configs/amlogic_ne.fragment",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-09-13T01:51:55Z",
+      "side": 1,
+      "message": "Or unset, actually...",
+      "parentUuid": "abdb538d_695c7685",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 50
+      },
+      "revId": "4adc533fca5f0fa3216a278ccf6aa05a224673d4",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
