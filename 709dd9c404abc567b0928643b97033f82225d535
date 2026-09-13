@@ -16,6 +16,24 @@
       "message": "I would prefer a cherry-pick from: https://github.com/khadas/common_drivers/commit/a4d55dd1930d14621d97e15308630458ad213bb4.",
       "revId": "709dd9c404abc567b0928643b97033f82225d535",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f643e47_466b6681",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 29
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-09-13T10:47:59Z",
+      "side": 1,
+      "message": "Leaving this open.",
+      "parentUuid": "ed79d264_62b7b0fa",
+      "revId": "709dd9c404abc567b0928643b97033f82225d535",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
