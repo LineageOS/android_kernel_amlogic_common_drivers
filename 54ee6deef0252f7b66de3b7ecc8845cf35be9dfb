@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a796e92_0b5ace84",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 17162
+      },
+      "writtenOn": "2026-09-16T15:18:54Z",
+      "side": 1,
+      "message": "looks fine for most g12 target, used it on s922x, works with no issue",
+      "revId": "54ee6deef0252f7b66de3b7ecc8845cf35be9dfb",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
