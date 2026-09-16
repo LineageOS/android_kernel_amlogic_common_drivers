@@ -1007,9 +1007,8 @@ static void ceca_arbit_bit_time_set(unsigned int bit_set,
 	}
 }
 
-static void ao_ceca_init(void)
+static void ceca_clk_init(void)
 {
-	unsigned long data32;
 #ifndef CONFIG_AMLOGIC_ZAPPER_CUT
 	unsigned int reg;
 
@@ -1075,6 +1074,26 @@ static void ao_ceca_init(void)
 		}
 	}
 #endif
+}
+
+static bool ceca_clk_ok(void)
+{
+	unsigned int reg;
+
+	if (cec_dev->plat_data->chip_id <= CEC_CHIP_TXL ||
+	    cec_dev->plat_data->chip_id >= CEC_CHIP_A1 ||
+	    !cec_dev->plat_data->ee_to_ao)
+		return true;
+
+	reg = read_ao(AO_CEC_CLK_CNTL_REG0);
+	return (reg & ((1 << 31) | (1 << 30))) == ((1 << 31) | (1 << 30));
+}
+
+static void ao_ceca_init(void)
+{
+	unsigned long data32;
+
+	ceca_clk_init();
 	if (cec_dev->plat_data->ee_to_ao) {
 		data32	= 0;
 		data32 |= (7 << 12);	/* filter_del */
@@ -1206,6 +1225,11 @@ void ceca_hw_reset(void)
 {
 	unsigned int data32 = 0;
 
+	if (!ceca_clk_ok()) {
+		CEC_ERR("ceca clk gated, AO_CEC_CLK_CNTL_REG0:0x%x, re-enable\n",
+			read_ao(AO_CEC_CLK_CNTL_REG0));
+		ceca_clk_init();
+	}
 	if (cec_dev->plat_data->ee_to_ao) {
 		data32 |= (7 << 12);	/* filter_del */
 		data32 |= (1 <<  8);	/* filter_tick: 1us */
