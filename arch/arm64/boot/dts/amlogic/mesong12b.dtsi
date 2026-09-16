@@ -1268,6 +1268,8 @@
 		output = <1>;
 		/*ee_cec;*/
 		arc_port_mask = <0x2>;
+		clocks = <&clkc_AO CLKID_AO_CEC>;
+		clock-names = "ceca_clk";
 		interrupts = <0 203 1
 					0 199 1>;	/*0:snps 1:ts*/
 		interrupt-names = "hdmi_aocecb","hdmi_aocec";

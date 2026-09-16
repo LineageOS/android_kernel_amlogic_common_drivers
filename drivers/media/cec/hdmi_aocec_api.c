@@ -1204,7 +1204,15 @@ void ceca_rx_buf_clear(void)
 
 void ceca_hw_reset(void)
 {
-	write_ao(AO_CEC_GEN_CNTL, 0x1);
+	unsigned int data32 = 0;
+
+	if (cec_dev->plat_data->ee_to_ao) {
+		data32 |= (7 << 12);	/* filter_del */
+		data32 |= (1 <<  8);	/* filter_tick: 1us */
+		data32 |= (1 <<  3);	/* enable system clock*/
+	}
+	data32 |= 1 << 0;	/* [0]	  sw_reset: 1=Reset*/
+	write_ao(AO_CEC_GEN_CNTL, data32);
 	/* Enable gated clock (Normal mode). */
 	cec_set_reg_bits(AO_CEC_GEN_CNTL, 1, 1, 1);
 	/* Release SW reset */
@@ -1271,6 +1279,19 @@ static void ceca_addr_add(unsigned int l_add)
 /* --------hw related------- */
 void cec_set_clk(struct device *dev)
 {
+	if (cec_dev->plat_data->chip_id < CEC_CHIP_A1) {
+		cec_dev->ceca_clk = devm_clk_get(dev, "ceca_clk");
+		if (IS_ERR(cec_dev->ceca_clk)) {
+			cec_dev->ceca_clk = NULL;
+		} else {
+			clk_set_rate(cec_dev->ceca_clk, 32768);
+			clk_prepare_enable(cec_dev->ceca_clk);
+			CEC_INFO("get clka rate:%ld\n",
+				 clk_get_rate(cec_dev->ceca_clk));
+		}
+		return;
+	}
+
 	if (cec_dev->plat_data->chip_id >= CEC_CHIP_A1) {
 		cec_dev->ceca_clk = devm_clk_get(dev, "ceca_clk");
 		if (IS_ERR(cec_dev->ceca_clk)) {

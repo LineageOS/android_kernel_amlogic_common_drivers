@@ -833,8 +833,10 @@ static void cec_task(struct work_struct *work)
 #endif
 	}
 
-	if (ceca_err_flag && cec_dev->probe_finish)
+	if (ceca_err_flag && cec_dev->probe_finish) {
+		ceca_err_flag = 0;
 		cec_hw_reset(CEC_A);
+	}
 
 	/*triger next process*/
 	queue_delayed_work(cec_dev->cec_thread, dwork, CEC_FRAME_DELAY);
