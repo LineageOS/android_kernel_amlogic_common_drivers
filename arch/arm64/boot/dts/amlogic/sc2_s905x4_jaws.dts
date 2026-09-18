@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
  * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
+ * Xiaomi TV Box S (2nd Gen), based on the SC2 AH212 reference board.
+ * Board values were compared with the jaws vendor_boot DTB.
  */
 
 /dts-v1/;
@@ -8,11 +10,10 @@
 #include "meson-sc2.dtsi"
 #include "hdr10plus.dtsi"
 #include "mesonsc2_drm.dtsi"
-#include "partition_mbox_ab.dtsi"
 #include <dt-bindings/input/input.h>
 
 / {
-	amlogic-dt-id = "sc2_s905x4_ah212";
+	amlogic-dt-id = "xiaomi_sc2_jaws";
 	compatible = "sc2_s905x4_ah212";
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
@@ -1702,11 +1703,11 @@
 };
 
 &drm_amcvbsout {
-	status = "okay";
+	status = "disabled";
 };
 
 &drm_lcd {
-	status = "disable";
+	status = "disabled";
 };
 
 &amhdmitx {
@@ -1754,8 +1755,11 @@
 &aml_bt {
 	status = "okay";
 	reset-gpios = <&gpio    GPIOX_17 GPIO_ACTIVE_HIGH>;
+	bt_en-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
 	btwakeup-gpios = <&gpio GPIOX_18 GPIO_ACTIVE_HIGH>;
 	hostwake-gpios = <&gpio GPIOX_19 GPIO_ACTIVE_HIGH>;
+
+	/delete-property/ btwakeup-gpios;
 };
 
 &pwm_ef {
@@ -1765,7 +1769,7 @@
 };
 
 &irblaster {
-	status = "disabled";
+	status = "okay";
 };
 
 &uart_E {
@@ -1782,4 +1786,190 @@
 	cm_en = <0>;/*1:enable ;0:disable*/
 	/*0: 709/601  1: bt2020*/
 	tx_op_color_primary = <0>;
+};
+
+/* Xiaomi TV Box S (2nd Gen), "jaws". Values checked against vendor_boot DTB. */
+&custom_maps {
+	map_num = <2>;
+	/delete-property/ map2;
+	/delete-property/ map3;
+	/delete-node/ map_2;
+	/delete-node/ map_3;
+};
+
+&map_0 {
+	mapname = "xiaomi-ir-0";
+	customcode = <0x86>;
+	release_delay = <80>;
+	size = <12>;
+	keymap = <0x50067 0x6006c 0xb0069 0xc006a 0xd001c 0x80066
+		0x7000f 0x4008b 0x1100ec 0x300f0 0xe0073 0xf0072>;
+};
+
+&map_1 {
+	mapname = "xiaomi-ir-1";
+	customcode = <0x3c>;
+	release_delay = <80>;
+	size = <1>;
+	keymap = <0xcc0074>;
+};
+
+&sd_emmc_a {
+	status = "disabled";
+	/delete-node/ wifi@1;
+};
+
+&i2c2 {
+	status = "disabled";
+};
+
+&i2c3 {
+	status = "disabled";
+};
+
+&pwm_ef {
+	status = "disabled";
+};
+
+&pwm_gh {
+	status = "okay";
+};
+
+&loopbacka {
+	status = "disabled";
+};
+
+&wifi_pwm_conf {
+	pwm_channel1_conf {
+		pwms = <&pwm_ef 0 30550 0>;
+		duty-cycle = <15270>;
+		times = <8>;
+	};
+	pwm_channel2_conf {
+		pwms = <&pwm_ef 2 30500 0>;
+		duty-cycle = <15250>;
+		times = <12>;
+	};
+};
+
+/ {
+	wlpm_dev {
+		compatible = "mitv, wlpm-dev";
+		status = "okay";
+		dev_name = "wlpm-dev";
+		gpio_reset = <&gpio GPIOX_6 GPIO_ACTIVE_HIGH>;
+		vcc_down_delay = <500>;
+	};
+
+	pwmleds {
+		compatible = "pwm-leds";
+		status = "okay";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pwm_g_pins>;
+		SYS_LED {
+			label = "sys_led";
+			pwms = <&pwm_gh 0 5000000 0>;
+			max-brightness = <255>;
+			default-brightness = <255>;
+			linux,default-trigger = "timer";
+		};
+	};
+};
+
+/* Features and peripherals absent or disabled in the stock DTB. */
+&pcie {
+	status = "disabled";
+};
+
+&ir {
+	/delete-property/ wakeup_map;
+};
+
+/ {
+	/delete-node/ aml_primesl;
+	/delete-node/ gpio_keypad;
+	/delete-node/ ir_wakeup_key;
+	provisionkey {
+		status = "disabled";
+	};
+	cvbsout {
+		status = "disabled";
+	};
+	auge_sound {
+		/delete-node/ aml-audio-card,dai-link@6;
+	};
+	dvb-extern {
+		status = "disabled";
+	};
+	dvb-demux {
+		status = "disabled";
+	};
+	adc_keypad {
+		status = "disabled";
+	};
+};
+
+&tlc59116 {
+	status = "disabled";
+};
+
+&aw9523 {
+	status = "disabled";
+};
+
+/* Identity and resource settings from the stock DTB. */
+&vend_data {
+	vendor_name = "Xiaomi";
+	product_desc = "Xiaomi TV Box";
+	vendor_id = <0xec0a>;
+};
+
+&aocec {
+	vendor_name = "Xiaomi";
+	vendor_id = <0xec0a>;
+	product_desc = "Xiaomi TV Box";
+	cec_osd_string = "Xiaomi TV Box";
+	mboxes = <&mbox_fifo 8>;
+};
+
+&ir {
+	protocol = <REMOTE_TYPE_DUOKAN>;
+	/delete-property/ mboxes;
+};
+
+&vrtc {
+	mboxes = <&mbox_fifo 6>;
+};
+
+&ethmac {
+	mboxes = <&mbox_fifo 9>;
+};
+
+&hifidsp0 {
+	reg-names = "base-reg", "dspsupport-reg", "ddrfw-region";
+	clocks = <&clkc CLKID_DSPA_CLK>;
+	clock-names = "dspa_clk";
+	pm-support = /bits/ 8 <1>;
+	pwrctrl-support = <1>;
+	mboxes = <&mbox_fifo 2>;
+};
+
+&spdifout {
+	mux {
+		groups = "spdif_out_h";
+	};
+};
+
+&spdifout_a_mute {
+	mux {
+		groups = "GPIOH_4";
+	};
+};
+
+/ {
+	reserved-memory {
+		heap-gfx {
+			size = <0x0 0x6400000>;
+		};
+	};
 };
