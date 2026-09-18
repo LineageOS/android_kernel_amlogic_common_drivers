@@ -8,6 +8,7 @@ dtb-y += a1-a113l-ad403.dtb
 dtb-y += a1-a113l-ad403-spk.dtb
 dtb-y += a1-a113l-t404.dtb
 dtb-y += sc2_s905x4_ah212_drm.dtb
+dtb-y += sc2_s905x4_jaws.dtb
 dtb-y += sc2_s905x4_ah212_drm_soundbar.dtb
 dtb-y += t3_t965d4_ar321-2g.dtb
 dtb-y += t3_t965d4_ar331-4g.dtb
