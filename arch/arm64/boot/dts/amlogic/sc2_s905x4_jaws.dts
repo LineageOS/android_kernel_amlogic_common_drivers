@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
  * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
+ * Xiaomi TV Box S (2nd Gen), based on the SC2 AH212 reference board.
+ * Board values were compared with the jaws vendor_boot DTB.
  */
 
 /dts-v1/;
@@ -8,11 +10,10 @@
 #include "meson-sc2.dtsi"
 #include "hdr10plus.dtsi"
 #include "mesonsc2_drm.dtsi"
-#include "partition_mbox_ab.dtsi"
 #include <dt-bindings/input/input.h>
 
 / {
-	amlogic-dt-id = "sc2_s905x4_ah212";
+	amlogic-dt-id = "xiaomi_sc2_jaws";
 	compatible = "sc2_s905x4_ah212";
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
@@ -114,7 +115,7 @@
 			compatible = "shared-dma-pool";
 			reusable;
 			/* 1080p STB androidT size 88M */
-			size = <0x0 0x5800000>;
+			size = <0x0 0x6400000>;
 			alignment = <0x0 0x400000>;
 		};
 		dmaheap_secure_reserved:heap-secure {
@@ -287,7 +288,7 @@
 	dvb-extern {
 		compatible = "amlogic, dvb-extern";
 		dev_name = "dvb-extern";
-		status = "okay";
+		status = "disabled";
 
 		fe_num = <2>;
 		fe0_demod = "cxd2856";
@@ -313,7 +314,7 @@
 	dvb-demux {
 		compatible = "amlogic sc2, dvb-demux";
 		dev_name = "dvb-demux";
-		status = "okay";
+		status = "disabled";
 
 		reg = <0x0 0xfe000000 0x0 0x480000>;
 
@@ -446,22 +447,9 @@
 		pps-enable = <1>;
 	};
 
-	gpio_keypad{
-		compatible = "amlogic, gpio_keypad";
-		status = "okay";
-		scan_period = <20>;
-		key_num = <2>;
-		key_name = "bluetooth", "mute";
-		key_code = <600 SW_MUTE_DEVICE>;
-		key_type = <EV_KEY EV_SW>;
-		key-gpios = <&gpio  GPIOD_3  GPIO_ACTIVE_HIGH
-			     &gpio  GPIOE_2  GPIO_ACTIVE_HIGH>;
-		detect_mode = <0>;/*0:polling mode, 1:irq mode*/
-	};
-
 	adc_keypad {
 		compatible = "amlogic, adc_keypad";
-		status = "okay";
+		status = "disabled";
 		key_name = "vol-", "vol+", "power";
 		key_num = <3>;
 		io-channels = <&saradc 0>;
@@ -781,18 +769,6 @@
  *			};
  *		};
  */
-		aml-audio-card,dai-link@6 {
-			mclk-fs = <256>;
-			continuous-clock;
-			suffix-name = "alsaPORT-loopback";
-			cpu {
-				sound-dai = <&loopbacka>;
-				system-clock-frequency = <12288000>;
-			};
-			codec {
-				sound-dai = <&dummy_codec>;
-			};
-		};
 	};
 
 	picdec {
@@ -810,17 +786,51 @@
 		dividor = <49>; /* locker's parent */
 		status = "disabled";
 	};/* Audio Related end */
+
+	/delete-node/ aml_primesl;
+	/delete-node/ ir_wakeup_key;
+
+	provisionkey {
+		status = "disabled";
+	};
+
+	cvbsout {
+		status = "disabled";
+	};
+
+	wlpm_dev {
+		compatible = "mitv, wlpm-dev";
+		status = "okay";
+		dev_name = "wlpm-dev";
+		gpio_reset = <&gpio GPIOX_6 GPIO_ACTIVE_HIGH>;
+		vcc_down_delay = <500>;
+	};
+
+	pwmleds {
+		compatible = "pwm-leds";
+		status = "okay";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pwm_g_pins>;
+
+		SYS_LED {
+			label = "sys_led";
+			pwms = <&pwm_gh 0 5000000 0>;
+			max-brightness = <255>;
+			default-brightness = <255>;
+			linux,default-trigger = "timer";
+		};
+	};
 };
 
 &i2c2 {
-	status = "okay";
+	status = "disabled";
 	pinctrl-names="default";
 	pinctrl-0=<&i2c2_pins3>;
 	clock-frequency = <300000>;
 };
 
 &i2c3 {
-	status = "okay";
+	status = "disabled";
 	pinctrl-names="default";
 	pinctrl-0=<&i2c3_pins2>;
 	clock-frequency = <300000>; /* default 100k */
@@ -828,7 +838,7 @@
 	tlc59116: tlc59116@60 {
 		compatible = "amlogic,tlc59116_led";
 		reg = <0x60>;
-		status = "okay";
+		status = "disabled";
 
 		led0 {
 			default_colors = <0 0 0>;
@@ -861,7 +871,7 @@
 	aw9523: aw9523_led@5b {
 		compatible = "amlogic,aw9523b_led";
 		reg = <0x5b>;
-		status = "okay";
+		status = "disabled";
 		// reset-gpio = <&gpio GPIOD_11 GPIO_ACTIVE_HIGH>;
 		platform = <10>;
 
@@ -1161,7 +1171,7 @@
 		datalb-lane-mask-in = <1 0 0 0>;
 		src-clk-freq = <491520000>;
 
-		status = "okay";
+		status = "disabled";
 	};
 
 	loopbackb:loopback@1 {
@@ -1362,14 +1372,14 @@
 
 	spdifout: spdifout {
 		mux { /* GPIOD_10 */
-			groups = "spdif_out_d";
+			groups = "spdif_out_h";
 			function = "spdif_out";
 		};
 	};
 
 	spdifout_a_mute: spdifout_a_mute {
 		mux { /* GPIOD_10 */
-			groups = "GPIOD_10";
+			groups = "GPIOH_4";
 			function = "gpio_periphs";
 			output-low;
 		};
@@ -1420,6 +1430,19 @@
 	status = "okay";
 };
 
+&vrtc {
+	mboxes = <&mbox_fifo 6>;
+};
+
+&hifidsp0 {
+	reg-names = "base-reg", "dspsupport-reg", "ddrfw-region";
+	clocks = <&clkc CLKID_DSPA_CLK>;
+	clock-names = "dspa_clk";
+	pm-support = /bits/ 8 <1>;
+	pwrctrl-support = <1>;
+	mboxes = <&mbox_fifo 2>;
+};
+
 &dwc2_a {
 	status = "okay";
 	/** 0: normal, 1: otg+dwc3 host only, 2: otg+dwc3 device only*/
@@ -1446,12 +1469,12 @@
 &pcie {
 	reset-gpio = <&gpio GPIOX_7 GPIO_ACTIVE_HIGH>;
 	iommu-map = <0x100 &smmu 0x5 0x10>;
-	status = "disable";
+	status = "disabled";
 };
 
 /* SDIO */
 &sd_emmc_a {
-	status = "okay";
+	status = "disabled";
 	pinctrl-0 = <&sdio_pins>;
 	pinctrl-1 = <&sdio_clk_gate_pins>;
 	pinctrl-names = "default", "clk-gate";
@@ -1470,10 +1493,6 @@
 	//vmmc-supply = <&vddao_3v3>;
 	//vqmmc-supply = <&vddio_ao1v8>;
 
-	brcmf: wifi@1 {
-		reg = <1>;
-		compatible = "brcm,bcm4329-fmac";
-	};
 };
 
 /* SD card */
@@ -1546,12 +1565,55 @@
 	phy-mode = "rmii";
 	mac_wol = <1>;
 	mdns_wkup = <1>;
+	mboxes = <&mbox_fifo 9>;
 };
 
 &ir {
 	status = "okay";
 	pinctrl-0 = <&remote_pins>;
 	pinctrl-names = "default";
+	protocol = <REMOTE_TYPE_DUOKAN>;
+	/delete-property/ wakeup_map;
+	/delete-property/ mboxes;
+};
+
+&custom_maps {
+	map_num = <2>;
+	/delete-property/ map2;
+	/delete-property/ map3;
+	/delete-node/ map_2;
+	/delete-node/ map_3;
+};
+
+&map_0 {
+	mapname = "xiaomi-ir-0";
+	customcode = <0x86>;
+	release_delay = <80>;
+	size = <12>;
+	keymap = <0x50067 0x6006c 0xb0069 0xc006a 0xd001c 0x80066
+		0x7000f 0x4008b 0x1100ec 0x300f0 0xe0073 0xf0072>;
+};
+
+&map_1 {
+	mapname = "xiaomi-ir-1";
+	customcode = <0x3c>;
+	release_delay = <80>;
+	size = <1>;
+	keymap = <0xcc0074>;
+};
+
+&vend_data {
+	vendor_name = "Xiaomi";
+	product_desc = "Xiaomi TV Box";
+	vendor_id = <0xec0a>;
+};
+
+&aocec {
+	vendor_name = "Xiaomi";
+	vendor_id = <0xec0a>;
+	product_desc = "Xiaomi TV Box";
+	cec_osd_string = "Xiaomi TV Box";
+	mboxes = <&mbox_fifo 8>;
 };
 
 &spicc0 {
@@ -1702,11 +1764,11 @@
 };
 
 &drm_amcvbsout {
-	status = "okay";
+	status = "disabled";
 };
 
 &drm_lcd {
-	status = "disable";
+	status = "disabled";
 };
 
 &amhdmitx {
@@ -1754,18 +1816,36 @@
 &aml_bt {
 	status = "okay";
 	reset-gpios = <&gpio    GPIOX_17 GPIO_ACTIVE_HIGH>;
-	btwakeup-gpios = <&gpio GPIOX_18 GPIO_ACTIVE_HIGH>;
+	bt_en-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
 	hostwake-gpios = <&gpio GPIOX_19 GPIO_ACTIVE_HIGH>;
 };
 
 &pwm_ef {
 	pinctrl-0 = <&pwm_e_pins>;
 	pinctrl-names = "default";
+	status = "disabled";
+};
+
+&pwm_gh {
 	status = "okay";
 };
 
+&wifi_pwm_conf {
+	pwm_channel1_conf {
+		pwms = <&pwm_ef 0 30550 0>;
+		duty-cycle = <15270>;
+		times = <8>;
+	};
+
+	pwm_channel2_conf {
+		pwms = <&pwm_ef 2 30500 0>;
+		duty-cycle = <15250>;
+		times = <12>;
+	};
+};
+
 &irblaster {
-	status = "disabled";
+	status = "okay";
 };
 
 &uart_E {
