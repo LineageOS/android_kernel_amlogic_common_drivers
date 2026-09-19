@@ -1846,6 +1846,16 @@
 &aml_wifi {
 	interrupt-gpios = <&gpio GPIOX_7 GPIO_ACTIVE_HIGH>;
 	power_on-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_HIGH>;
+
+	/*
+	 * The MT7663 is a USB part with its own clock and has no use for the
+	 * 32.768kHz LPO PWM. Stock DTB keeps wifi_pwm_conf but never points
+	 * aml_wifi at it; inheriting pwm_config from meson-sc2.dtsi makes
+	 * devm_of_pwm_get() return -EPROBE_DEFER, and wifi_dev_probe() then
+	 * bails before wifi_setup_dt(), leaving power_on-gpios undriven.
+	 */
+	disable-wifi-32k;
+	/delete-property/ pwm_config;
 };
 
 &wifi_pwm_conf {
