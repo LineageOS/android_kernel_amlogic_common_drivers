@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a45931b8_2a2de037",
+        "filename": "arch/arm64/boot/dts/amlogic/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-09-20T11:32:28Z",
+      "side": 1,
+      "message": "Sort it",
+      "range": {
+        "startLine": 125,
+        "startChar": 0,
+        "endLine": 125,
+        "endChar": 29
+      },
+      "revId": "bb197fcb9317167be975ff71ddc9f3d84396cbaa",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
