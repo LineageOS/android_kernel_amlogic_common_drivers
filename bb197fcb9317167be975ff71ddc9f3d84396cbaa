@@ -22,6 +22,30 @@
       },
       "revId": "bb197fcb9317167be975ff71ddc9f3d84396cbaa",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "61154bc3_33c25d5c",
+        "filename": "arch/arm64/boot/dts/amlogic/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 32674
+      },
+      "writtenOn": "2026-09-21T06:35:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a45931b8_2a2de037",
+      "range": {
+        "startLine": 125,
+        "startChar": 0,
+        "endLine": 125,
+        "endChar": 29
+      },
+      "revId": "bb197fcb9317167be975ff71ddc9f3d84396cbaa",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
