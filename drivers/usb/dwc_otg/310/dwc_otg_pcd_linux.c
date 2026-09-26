@@ -980,11 +980,13 @@ static int _complete(dwc_otg_pcd_t *pcd, void *ep_handle,
 static int _connect(dwc_otg_pcd_t *pcd, int speed)
 {
 	gadget_wrapper->gadget.speed = speed;
+	aml_new_usb_set_device_connected(true);
 	return 0;
 }
 
 static int _disconnect(dwc_otg_pcd_t *pcd)
 {
+	aml_new_usb_set_device_connected(false);
 	if (gadget_wrapper->driver && gadget_wrapper->driver->disconnect)
 		gadget_wrapper->driver->disconnect(&gadget_wrapper->gadget);
 	return 0;

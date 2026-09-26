@@ -93,6 +93,7 @@ int clk_suspend_usb(struct platform_device *pdev, const char *s_clock_name,
 
 int device_status(unsigned long usb_peri_reg);
 int device_status_v2(unsigned long usb_peri_reg);
+void aml_new_usb_set_device_connected(bool connected);
 
 int crg_clk_enable_usb(struct platform_device *pdev,
 	 unsigned long usb_peri_reg, int controller_type);

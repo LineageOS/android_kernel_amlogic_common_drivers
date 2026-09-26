@@ -7,6 +7,7 @@
 #define __USB_V2_COMMON_HEADER_
 
 #include <linux/usb/phy.h>
+#include <linux/usb/role.h>
 #include <linux/platform_device.h>
 #include <linux/workqueue.h>
 #include <linux/clk.h>
@@ -63,8 +64,15 @@ struct amlogic_usb_v2 {
 	int portspeed;
 	struct delayed_work	work;
 	struct delayed_work	id_gpio_work;
+	struct delayed_work	id_override_work;
 	struct gpio_desc *usb_gpio_desc;
 	struct gpio_desc *idgpiodesc;
+	struct gpio_desc *id_override_gpio;
+	struct usb_role_switch *role_sw;
+	enum usb_role current_role;
+	u32 id_override_delay_ms;
+	bool id_override_auto;
+	bool upstream_connected;
 
 	int portnum;
 	int suspend_flag;
