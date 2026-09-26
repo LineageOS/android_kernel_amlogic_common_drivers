@@ -25,6 +25,7 @@
 #define HOST_MODE	0
 #define DEVICE_MODE	1
 #define XHCI_PORT_A_MEM_SIZE 0X4
+#define ID_OVERRIDE_DELAY_MS 1000
 
 struct usb_aml_regs_v2 usb_new_aml_regs_v2;
 struct amlogic_usb_v2	*g_phy_v2;
@@ -469,6 +470,96 @@ static irqreturn_t phy_aml_id_gpio_detect_irq(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
+static bool phy_aml_has_upstream_vbus(struct amlogic_usb_v2 *phy)
+{
+	union u2p_r1_v2 reg1;
+	void __iomem *u2p_r1;
+
+	u2p_r1 = (void __iomem *)((unsigned long)phy->usb2_phy_cfg +
+				  PHY_REGISTER_SIZE + 0x4);
+	reg1.d32 = readl(u2p_r1);
+
+	return reg1.b.OTGSESSVLD0;
+}
+
+static int phy_aml_set_role(struct amlogic_usb_v2 *phy, enum usb_role role)
+{
+	unsigned long reg_addr = (unsigned long)phy->usb2_phy_cfg;
+	int ret;
+
+	switch (role) {
+	case USB_ROLE_HOST:
+		/* Assert the external, active-low ID override. */
+		ret = gpiod_direction_output(phy->id_override_gpio, 1);
+		if (ret)
+			return ret;
+
+		amlogic_new_set_vbus_power(phy, 1);
+		aml_new_usb_notifier_call(0);
+		set_mode(reg_addr, HOST_MODE);
+		break;
+	case USB_ROLE_DEVICE:
+		/* Release the override so the ID line is pulled high. */
+		ret = gpiod_direction_input(phy->id_override_gpio);
+		if (ret)
+			return ret;
+
+		set_mode(reg_addr, DEVICE_MODE);
+		aml_new_usb_notifier_call(1);
+		amlogic_new_set_vbus_power(phy, 0);
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	phy->current_role = role;
+	return 0;
+}
+
+static int phy_aml_role_set(struct usb_role_switch *sw, enum usb_role role)
+{
+	struct amlogic_usb_v2 *phy = usb_role_switch_get_drvdata(sw);
+	int ret;
+
+	/* An explicit Android role request supersedes boot-time auto detection. */
+	cancel_delayed_work_sync(&phy->id_override_work);
+	ret = phy_aml_set_role(phy, role);
+	if (ret)
+		dev_err(phy->dev, "failed to switch USB role to %s: %d\n",
+			usb_role_string(role), ret);
+
+	return ret;
+}
+
+static enum usb_role phy_aml_role_get(struct usb_role_switch *sw)
+{
+	struct amlogic_usb_v2 *phy = usb_role_switch_get_drvdata(sw);
+
+	return phy->current_role;
+}
+
+static void phy_aml_id_override_work(struct work_struct *work)
+{
+	struct amlogic_usb_v2 *phy = container_of(work,
+			struct amlogic_usb_v2, id_override_work.work);
+	int ret;
+
+	/* A powered upstream host is attached, so keep the port as a device. */
+	if (phy_aml_has_upstream_vbus(phy)) {
+		dev_info(phy->dev,
+			 "upstream VBUS detected, keeping USB device mode\n");
+		return;
+	}
+
+	ret = phy_aml_set_role(phy, USB_ROLE_HOST);
+	if (ret) {
+		dev_err(phy->dev, "failed to select USB host mode: %d\n", ret);
+		return;
+	}
+
+	dev_info(phy->dev, "no upstream VBUS, switched to USB host mode\n");
+}
+
 static bool device_is_available(const struct device_node *device)
 {
 	const char *status;
@@ -548,6 +639,7 @@ static int amlogic_new_usb3_v2_probe(struct platform_device *pdev)
 	int otg = 0;
 	int ret;
 	struct device_node *tsi_pci;
+	struct usb_role_switch_desc role_sw = { };
 	unsigned int phy_version = 0;
 
 	gpio_name = of_get_property(dev->of_node, "gpio-vbus-power", NULL);
@@ -637,6 +729,16 @@ static int amlogic_new_usb3_v2_probe(struct platform_device *pdev)
 	phy = devm_kzalloc(&pdev->dev, sizeof(*phy), GFP_KERNEL);
 	if (!phy)
 		return -ENOMEM;
+
+	phy->id_override_gpio = devm_gpiod_get_optional(dev, "id-override",
+						       GPIOD_ASIS);
+	if (IS_ERR(phy->id_override_gpio))
+		return dev_err_probe(dev, PTR_ERR(phy->id_override_gpio),
+				     "failed to get USB ID override GPIO\n");
+
+	phy->id_override_delay_ms = ID_OVERRIDE_DELAY_MS;
+	of_property_read_u32(dev->of_node, "amlogic,id-override-delay-ms",
+			     &phy->id_override_delay_ms);
 
 	if (otg) {
 		if (otg == 2) {
@@ -729,6 +831,26 @@ static int amlogic_new_usb3_v2_probe(struct platform_device *pdev)
 
 	INIT_DELAYED_WORK(&phy->work, amlogic_gxl_work);
 	INIT_DELAYED_WORK(&phy->id_gpio_work, phy_aml_id_gpio_work);
+	INIT_DELAYED_WORK(&phy->id_override_work, phy_aml_id_override_work);
+
+	g_phy_v2 = phy;
+	if (phy->id_override_gpio) {
+		ret = phy_aml_set_role(phy, USB_ROLE_DEVICE);
+		if (ret)
+			return dev_err_probe(dev, ret,
+					     "failed to select USB device mode\n");
+
+		role_sw.fwnode = dev_fwnode(dev);
+		role_sw.set = phy_aml_role_set;
+		role_sw.get = phy_aml_role_get;
+		role_sw.allow_userspace_control = true;
+		role_sw.driver_data = phy;
+		role_sw.name = "amlogic-usb";
+		phy->role_sw = usb_role_switch_register(dev, &role_sw);
+		if (IS_ERR(phy->role_sw))
+			return dev_err_probe(dev, PTR_ERR(phy->role_sw),
+					     "failed to register USB role switch\n");
+	}
 
 	usb_add_phy_dev(&phy->phy);
 
@@ -736,14 +858,22 @@ static int amlogic_new_usb3_v2_probe(struct platform_device *pdev)
 
 	pm_runtime_enable(phy->dev);
 
-	g_phy_v2 = phy;
 	aml_new_usb3_get_phy(phy);
+
+	if (phy->id_override_gpio)
+		schedule_delayed_work(&phy->id_override_work,
+			msecs_to_jiffies(phy->id_override_delay_ms));
 
 	return 0;
 }
 
 static int amlogic_new_usb3_remove(struct platform_device *pdev)
 {
+	struct amlogic_usb_v2 *phy = platform_get_drvdata(pdev);
+
+	cancel_delayed_work_sync(&phy->id_override_work);
+	if (phy->role_sw)
+		usb_role_switch_unregister(phy->role_sw);
 	return 0;
 }
 
