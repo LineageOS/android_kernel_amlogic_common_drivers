@@ -1440,6 +1440,9 @@
 	status = "okay";
 	portnum = <1>;
 	otg = <1>;
+	/* GPIOH_8 pulls the USB-A ID line low when host mode is selected. */
+	id-override-gpios = <&gpio GPIOH_8 GPIO_ACTIVE_LOW>;
+	amlogic,id-override-delay-ms = <1000>;
 	/*gpio-vbus-power = "GPIOH_6";*/
 	/*gpios = <&gpio GPIOH_6 GPIO_ACTIVE_HIGH>;*/
 };
