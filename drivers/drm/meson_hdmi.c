@@ -2457,18 +2457,64 @@ static void meson_hdmitx_hpd_cb(void *data)
 #endif
 
 	DRM_INFO("drm hdmitx hpd notify\n");
-	if (!hdmitx_get_hpd_state(tx_comm) && !am_hdmi->android_path) {
-		drm_modeset_lock(mode_lock, NULL);
-		meson_hdmitx_disconnect_hdcp();
+	if (!hdmitx_get_hpd_state(tx_comm)) {
 		am_hdmi_info.hdmitx_on = 0;
-		drm_modeset_unlock(mode_lock);
+		if (!am_hdmi->android_path) {
+			drm_modeset_lock(mode_lock, NULL);
+			meson_hdmitx_disconnect_hdcp();
+			drm_modeset_unlock(mode_lock);
+		}
 	}
 
 	/*get hdcp ver property immediately after plugin in case hdcp14
 	 *authentication snow screen issue
 	 */
-	if (hdmitx_get_hpd_state(tx_comm))
+	if (hdmitx_get_hpd_state(tx_comm)) {
 		am_hdmi_info.hdcp_rx_type = am_hdmi_info.hdmitx_dev->get_rx_hdcp_cap();
+		am_hdmi_info.sequence_id = hdmitx_get_hpd_hw_sequence_id(tx_comm);
+
+		if ((am_hdmi_info.recovery_mode || !am_hdmi_info.hdmitx_on || !tx_comm->ready) &&
+		    connector->state && connector->state->crtc &&
+		    connector->state->crtc->state &&
+		    connector->state->crtc->state->active) {
+			struct am_hdmitx_connector_state *conn_state =
+				to_am_hdmitx_connector_state(connector->state);
+			struct am_meson_crtc *amcrtc =
+				to_am_meson_crtc(connector->state->crtc);
+			struct am_meson_crtc_state *meson_crtc_state =
+				to_am_meson_crtc_state(connector->state->crtc->state);
+			enum vmode_e vmode = meson_crtc_state->vmode & ~VMODE_INIT_BIT_MASK;
+			struct drm_display_mode *mode =
+				&connector->state->crtc->state->adjusted_mode;
+
+			DRM_INFO("hdmitx: re-enabling output on plugin\n");
+			drm_modeset_lock(mode_lock, NULL);
+			conn_state->hcs.state_sequence_id =
+				am_hdmi_info.sequence_id;
+			conn_state->hcs.mode = vmode;
+			meson_crtc_state->uboot_mode_init = 0;
+			meson_vout_notify_mode_change(amcrtc->vout_index,
+						      vmode, EVENT_MODE_SET_START);
+			hdmitx_common_do_mode_setting(tx_comm,
+						      &conn_state->hcs,
+						      NULL);
+			meson_vout_notify_mode_change(amcrtc->vout_index,
+						      vmode, EVENT_MODE_SET_FINISH);
+			if (mode && mode->name[0])
+				meson_vout_update_mode_name(amcrtc->vout_index,
+							    mode->name, "hdmitx");
+			am_hdmi_info.hdmitx_on = 1;
+			hdmitx_common_avmute_locked(tx_comm, CLR_AVMUTE,
+						    AVMUTE_PATH_DRM);
+			if (tx_comm->tx_hw)
+				hdmitx_hw_cntl_misc(tx_comm->tx_hw,
+						    MISC_AVMUTE_OP, CLR_AVMUTE);
+			if (!am_hdmi_info.android_path) {
+				meson_hdmitx_update_hdcp();
+			}
+			drm_modeset_unlock(mode_lock);
+		}
+	}
 
 #ifdef CONFIG_CEC_NOTIFIER
 	if (hdmitx_get_hpd_state(tx_comm)) {
