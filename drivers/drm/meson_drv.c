@@ -72,16 +72,25 @@ static int check_reboot_mode(char *str)
 	 */
 	if (strncmp("factory", str, 7) == 0 ||
 	    strncmp("recovery", str, 8) == 0 ||
-	    strncmp("update", str, 6) == 0) {
+	    strncmp("update", str, 6) == 0 ||
+	    strncmp("fastboot", str, 8) == 0) {
 		recovery_mode = 1;
-	} else {
-		recovery_mode = 0;
 	}
 
 	return 0;
 }
 
 __setup("reboot_mode=", check_reboot_mode);
+
+static int check_recovery_part(char *str)
+{
+	if (str && strlen(str) > 0)
+		recovery_mode = 1;
+
+	return 0;
+}
+
+__setup("recovery_part=", check_recovery_part);
 
 static void am_meson_fb_output_poll_changed(struct drm_device *dev)
 {
