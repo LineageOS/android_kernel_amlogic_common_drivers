@@ -252,6 +252,7 @@ struct amlsd_platform {
 	bool auto_clk;
 	bool ddr;
 	bool ignore_desc_busy;
+	bool sduart_enabled;
 	unsigned int card_insert;
 	int is_uart;
 	unsigned int src_clk_rate;
