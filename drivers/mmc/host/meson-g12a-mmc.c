@@ -200,6 +200,7 @@ static int amlogic_of_parse(struct mmc_host *mmc)
 {
 	struct device *dev = mmc->parent;
 	struct amlsd_platform *pdata = mmc_priv(mmc);
+	struct meson_host *host = pdata->host;
 
 	if (device_property_read_u32(dev, "init_core_phase",
 			&pdata->sd_mmc.init.core_phase) < 0)
@@ -232,10 +233,12 @@ static int amlogic_of_parse(struct mmc_host *mmc)
 			&pdata->sd_mmc.sdr.tx_phase) < 0)
 		pdata->sd_mmc.sdr.tx_phase = 0;
 
-	if (device_property_read_u32(dev, "card_type",
-			&pdata->card_type) < 0)
-		dev_err(mmc->parent,
-			"No config cart type value\n");
+	if (!host->tdma) {
+		if (device_property_read_u32(dev, "card_type",
+				&pdata->card_type) < 0)
+			dev_err(mmc->parent,
+				"No config cart type value\n");
+	}
 
 	if (device_property_read_bool(dev, "mmc_debug_flag"))
 		pdata->debug_flag = 0;
@@ -496,6 +499,9 @@ static void meson_mmc_clk_gate(struct mmc_host *mmc)
 	struct meson_host *host = pdata->host;
 	u32 cfg;
 
+	if (pdata->is_uart)
+		return;
+
 	if (pdata->pins_clk_gate) {
 		pinctrl_select_state(host->pinctrl, pdata->pins_clk_gate);
 	} else {
@@ -514,6 +520,9 @@ static void meson_mmc_clk_ungate(struct mmc_host *mmc)
 	struct amlsd_platform *pdata = mmc_priv(mmc);
 	struct meson_host *host = pdata->host;
 	u32 cfg;
+
+	if (pdata->is_uart)
+		return;
 
 	if (pdata->pins_clk_gate)
 		pinctrl_select_state(host->pinctrl, pdata->pins_default);
@@ -1367,6 +1376,9 @@ static void meson_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	u32 bus_width, val;
 	int err;
 
+	if (pdata->is_uart)
+		return;
+
 	if (host->tdma)
 		wait_for_completion(&host->drv_completion);
 	/*
@@ -1463,6 +1475,9 @@ void aml_config_pinmux(struct mmc_host *mmc)
 {
 	struct amlsd_platform *pdata = mmc_priv(mmc);
 	struct meson_host *host = pdata->host;
+
+	if (pdata->is_uart)
+		return;
 
 	pinctrl_select_state(host->pinctrl, pdata->pins_default);
 }
@@ -1800,6 +1815,12 @@ static void meson_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	struct meson_host *host = pdata->host;
 	unsigned long flags;
 
+	if (pdata->is_uart) {
+		mrq->cmd->error = -ENOMEDIUM;
+		mmc_request_done(mmc, mrq);
+		return;
+	}
+
 	if (host->tdma &&
 		mrq->cmd->opcode != MMC_SEND_TUNING_BLOCK) {
 		wait_for_completion(&host->drv_completion);
@@ -2076,12 +2097,16 @@ static irqreturn_t meson_mmc_irq_thread(int irq, void *dev_id)
  */
 static int meson_mmc_get_cd(struct mmc_host *mmc)
 {
+	struct amlsd_platform *pdata = mmc_priv(mmc);
 	int status = mmc_gpio_get_cd(mmc);
 
-	if (status == -EINVAL)
+	if (status == -EINVAL || status == -ENOSYS)
 		return 1; /* assume present */
 
-	return !status;
+	if (pdata->is_uart)
+		return 0;
+
+	return status;
 }
 
 static void meson_mmc_cfg_init(struct meson_host *host)
@@ -2136,6 +2161,9 @@ static int meson_mmc_voltage_switch(struct mmc_host *mmc, struct mmc_ios *ios)
 	struct amlsd_platform *pdata = mmc_priv(mmc);
 	struct meson_host *host = pdata->host;
 	int err;
+
+	if (pdata->is_uart)
+		return 0;
 
 	if (IS_ERR(mmc->supply.vqmmc) && IS_ERR(mmc->supply.vmmc))
 		return 0;
@@ -2292,164 +2320,188 @@ static int meson_mmc_execute_tuning(struct mmc_host *mmc, u32 opcode)
 //}
 //EXPORT_SYMBOL(sdio_get_vendor);
 
-//static struct pinctrl * __must_check aml_pinctrl_select(struct mmc_host *mmc,
-//							const char *name)
-//{
-//	struct amlsd_platform *pdata = mmc_priv(mmc);
-//	struct meson_host *host = pdata->host;
-//	struct pinctrl *p = host->pinctrl;
-//	struct pinctrl_state *s;
-//	int ret = 1;
-//
-//	if (!p) {
-//		dev_err(host->dev, "%s NULL POINT!!\n", __func__);
-//		return ERR_PTR(ret);
-//	}
-//
-//	s = pinctrl_lookup_state(p, name);
-//	if (IS_ERR(s)) {
-//		pr_err("lookup %s fail\n", name);
-//		devm_pinctrl_put(p);
-//		return ERR_CAST(s);
-//	}
-//
-//	ret = pinctrl_select_state(p, s);
-//	if (ret < 0) {
-//		pr_err("select %s fail\n", name);
-//		devm_pinctrl_put(p);
-//		return ERR_PTR(ret);
-//	}
-//	return p;
-//}
-//
-//static int aml_uart_switch(struct mmc_host *mmc, bool on)
-//{
-//	//struct amlsd_platform *pdata = mmc_priv(mmc);
-//	//struct meson_host *host = pdata->host;
-//	struct pinctrl *pc;
-//	char *name[2] = {
-//		"sd_to_ao_uart_pins",
-//		"ao_to_sd_uart_pins",
-//	};
-//
-//	pc = aml_pinctrl_select(mmc, name[on]);
-//	return on;
-//}
-//
-//static int aml_is_sduart(struct mmc_host *mmc)
-//{
-//	struct amlsd_platform *pdata = mmc_priv(mmc);
-//	struct meson_host *host = pdata->host;
-//	int in = 0, i;
-//	int high_cnt = 0, low_cnt = 0;
-//	u32 vstat = 0;
-//
-//	if (pdata->is_uart)
-//		return 0;
-//	//if (!pdata->sd_uart_init) {
-//	//	aml_uart_switch(mmc, 0);
-//	//} else {
-//	//	in = (readl(host->pin_mux_base) & DATA3_PINMUX_MASK) >>
-//	//		__ffs(DATA3_PINMUX_MASK);
-//	//	if (in == 2)
-//	//		return 1;
-//	//	else
-//	//		return 0;
-//	//}
-//	for (i = 0; ; i++) {
-//		mdelay(1);
-//		vstat = readl(host->regs + SD_EMMC_STATUS) & 0xffffffff;
-//		if (vstat & 0x80000) {
-//			high_cnt++;
-//			low_cnt = 0;
-//		} else {
-//			low_cnt++;
-//			high_cnt = 0;
-//		}
-//		if (high_cnt > 100 || low_cnt > 100)
-//			break;
-//	}
-//	if (low_cnt > 100)
-//		in = 1;
-//	return in;
-//}
+static struct pinctrl * __must_check aml_pinctrl_select(struct mmc_host *mmc,
+							const char *name)
+{
+	struct amlsd_platform *pdata = mmc_priv(mmc);
+	struct meson_host *host = pdata->host;
+	struct pinctrl *p = host->pinctrl;
+	struct pinctrl_state *s;
+	int ret;
 
-//static int aml_is_card_insert(struct mmc_gpio *ctx)
-//{
-//	int ret = 0, in_count = 0, out_count = 0, i;
-//
-//	if (ctx->cd_gpio) {
-//		for (i = 0; i < 200; i++) {
-//			ret = gpiod_get_value(ctx->cd_gpio);
-//			if (ret)
-//				out_count++;
-//			in_count++;
-//			if (out_count > 100 || in_count > 100)
-//				break;
-//		}
-//		if (out_count > 100)
-//			ret = 1;
-//		else if (in_count > 100)
-//			ret = 0;
-//	}
-////        if (ctx->override_cd_active_level)
-//  //              ret = !ret; /* reverse, so ---- 0: no inserted  1: inserted */
-//
-//	return ret;
-//}
+	if (!p) {
+		dev_err(host->dev, "%s NULL POINT!!\n", __func__);
+		return ERR_PTR(-EINVAL);
+	}
 
-//int meson_mmc_cd_detect(struct mmc_host *mmc)
-//{
-//	int gpio_val, val, ret = 0;
-//	struct amlsd_platform *pdata = mmc_priv(mmc);
-//	struct meson_host *host = pdata->host;
-//	struct mmc_gpio *ctx = mmc->slot.handler_priv;
-//
-//	if (host->tdma)
-//		wait_for_completion(&host->drv_completion);
-//	gpio_val = aml_is_card_insert(ctx);
-//	dev_notice(host->dev, "card %s\n", gpio_val ? "OUT" : "IN");
-//	mmc->trigger_card_event = true;
-//	if (!gpio_val) {//card insert
-//		if (pdata->card_insert)
-//			goto out;
-//		pdata->card_insert = 1;
-//		val = aml_is_sduart(mmc);
-//		dev_notice(host->dev, " %s insert\n", val ? "UART" : "SDCARD");
-//		if (val) {//uart insert
-//			pdata->is_uart = 1;
-//			aml_uart_switch(mmc, 1);
-//			mmc->caps &= ~MMC_CAP_4_BIT_DATA;
-//			pdata->pins_default = pinctrl_lookup_state(host->pinctrl,
-//								  "sd_1bit_pins");
-//			if (IS_ERR(pdata->pins_default)) {
-//				ret = PTR_ERR(pdata->pins_default);
-//				goto out;
-//			}
-//		} else {//sdcard insert
-//			aml_uart_switch(mmc, 0);
-//			mmc->caps |= MMC_CAP_4_BIT_DATA;
-//			pdata->pins_default = pinctrl_lookup_state(host->pinctrl,
-//								  "sd_default");
-//		}
-//	} else { //card out
-//		if (!pdata->card_insert)
-//			goto out;
-//		if (pdata->is_uart) {
-//			pdata->is_uart = 0;
-//			devm_free_irq(mmc->parent, host->cd_irq, mmc);
-//		}
-//		pdata->card_insert = 0;
-//		aml_uart_switch(mmc, 0);
-//	}
-//	if (!pdata->is_uart)
-//		mmc_detect_change(mmc, msecs_to_jiffies(200));
-//
-//out:
-//	if (host->tdma)
-//		complete(&host->drv_completion);
-//	return ret;
-//}
+	s = pinctrl_lookup_state(p, name);
+	if (IS_ERR(s)) {
+		dev_err(host->dev, "lookup %s fail: %ld\n", name, PTR_ERR(s));
+		return ERR_CAST(s);
+	}
+
+	ret = pinctrl_select_state(p, s);
+	if (ret < 0) {
+		dev_err(host->dev, "select %s fail: %d\n", name, ret);
+		return ERR_PTR(ret);
+	}
+	return p;
+}
+
+static int aml_uart_switch(struct mmc_host *mmc, bool on)
+{
+	struct pinctrl *pc;
+	char *name[2] = {
+		"sd_to_ao_uart_pins",
+		"ao_to_sd_uart_pins",
+	};
+
+	pc = aml_pinctrl_select(mmc, name[on]);
+	if (IS_ERR(pc))
+		return PTR_ERR(pc);
+	return 0;
+}
+
+static int aml_is_sduart(struct mmc_host *mmc)
+{
+	struct amlsd_platform *pdata = mmc_priv(mmc);
+	struct meson_host *host = pdata->host;
+	int in = 0, i, ret;
+	int high_cnt = 0, low_cnt = 0;
+	u32 vstat = 0;
+
+	if (pdata->is_uart)
+		return 1;
+
+	/*
+	 * If U-Boot already configured GPIOC_2/GPIOC_3 for UART AO A
+	 * (mux function 2), we are already using the SD slot for UART console.
+	 * Do NOT disrupt the console pinmux!
+	 */
+	if (host->pin_mux_base) {
+		u32 pmx = readl(host->pin_mux_base);
+		u32 c3_mux = (pmx >> 12) & 0xf;
+		u32 c2_mux = (pmx >> 8) & 0xf;
+
+		dev_notice(host->dev, "GPIOC pinmux: 0x%08x (c3=%u, c2=%u)\n",
+			   pmx, c3_mux, c2_mux);
+		if (c3_mux == 2 || c2_mux == 2)
+			return 1;
+	}
+
+	/* Temporarily route Port C to sdcard to sample DAT3 with pull-up */
+	ret = aml_uart_switch(mmc, 0);
+	if (ret)
+		return 0;
+	usleep_range(5000, 10000);
+
+	for (i = 0; i < 200; i++) {
+		usleep_range(500, 1000);
+		vstat = readl(host->regs + SD_EMMC_STATUS) & 0xffffffff;
+		if (vstat & 0x80000) {
+			high_cnt++;
+			low_cnt = 0;
+		} else {
+			low_cnt++;
+			high_cnt = 0;
+		}
+		if (high_cnt > 50 || low_cnt > 50)
+			break;
+	}
+	if (low_cnt > 50)
+		in = 1;
+	return in;
+}
+
+static int aml_is_card_inserted(struct mmc_host *mmc)
+{
+	int cd = 0, in_count = 0, out_count = 0, i;
+
+	for (i = 0; i < 50; i++) {
+		cd = mmc_gpio_get_cd(mmc);
+		if (cd < 0)
+			return cd;
+		if (cd > 0)
+			in_count++;
+		else
+			out_count++;
+		if (in_count > 25 || out_count > 25)
+			break;
+		usleep_range(200, 500);
+	}
+	return (in_count > 25) ? 1 : 0;
+}
+
+static int meson_mmc_cd_detect(struct mmc_host *mmc)
+{
+	int card_in, is_uart = 0, ret = 0;
+	struct amlsd_platform *pdata = mmc_priv(mmc);
+	struct meson_host *host = pdata->host;
+
+	if (host->tdma)
+		wait_for_completion(&host->drv_completion);
+	card_in = aml_is_card_inserted(mmc);
+	if (card_in < 0)
+		goto out;
+
+	if (card_in) {
+		if (pdata->card_insert)
+			goto out;
+		pdata->card_insert = 1;
+
+		is_uart = aml_is_sduart(mmc);
+		dev_notice(host->dev, "card inserted, type: %s\n", is_uart ? "UART" : "SDCARD");
+		if (is_uart) {
+			pdata->is_uart = 1;
+			aml_uart_switch(mmc, 1);
+			mmc->caps &= ~MMC_CAP_4_BIT_DATA;
+			pdata->pins_default = pinctrl_lookup_state(host->pinctrl,
+								  "sd_1bit_pins");
+			if (IS_ERR(pdata->pins_default)) {
+				ret = PTR_ERR(pdata->pins_default);
+				goto out;
+			}
+			dev_notice(host->dev, "SD-card UART active on Port C\n");
+		} else {
+			pdata->is_uart = 0;
+			aml_uart_switch(mmc, 0);
+			mmc->caps |= MMC_CAP_4_BIT_DATA;
+			pdata->pins_default = pinctrl_lookup_state(host->pinctrl,
+								  "sd_default");
+			if (IS_ERR(pdata->pins_default)) {
+				ret = PTR_ERR(pdata->pins_default);
+				goto out;
+			}
+			pinctrl_select_state(host->pinctrl, pdata->pins_default);
+		}
+	} else {
+		if (!pdata->card_insert && !pdata->is_uart)
+			goto out;
+		dev_notice(host->dev, "card removed, switch UART back to AO\n");
+		pdata->is_uart = 0;
+		pdata->card_insert = 0;
+		aml_uart_switch(mmc, 0);
+		pdata->pins_default = pinctrl_lookup_state(host->pinctrl,
+							  "sd_default");
+	}
+	if (!pdata->is_uart)
+		mmc_detect_change(mmc, msecs_to_jiffies(200));
+
+out:
+	if (host->tdma)
+		complete(&host->drv_completion);
+	return ret;
+}
+
+static void meson_mmc_cd_detect_work(struct work_struct *work)
+{
+	struct amlsd_platform *pdata = container_of(
+			work, struct amlsd_platform, cd_detect.work);
+	struct mmc_host *mmc = pdata->mmc;
+
+	meson_mmc_cd_detect(mmc);
+	schedule_delayed_work(&pdata->cd_detect, msecs_to_jiffies(500));
+}
 
 static const struct mmc_host_ops meson_mmc_ops = {
 	.request	= meson_mmc_request,
@@ -2688,12 +2740,16 @@ static int g12a_mmc_probe(struct platform_device *pdev)
 					1700000, 1800000, 1950000);
 		}
 
-		if (aml_card_type_non_sdio(pdata))
+		if (aml_card_type_non_sdio(pdata)) {
 			pdata->pins_default = pinctrl_lookup_state(host->pinctrl,
 								  "sd_1bit_pins");
-		else
+		} else {
 			pdata->pins_default = pinctrl_lookup_state(host->pinctrl,
-								  "default");
+								  "sdio_default");
+			if (IS_ERR(pdata->pins_default))
+				pdata->pins_default = pinctrl_lookup_state(host->pinctrl,
+									  "default");
+		}
 		if (IS_ERR(pdata->pins_default)) {
 			ret = PTR_ERR(pdata->pins_default);
 			goto free_host;
@@ -2738,10 +2794,19 @@ static int g12a_mmc_probe(struct platform_device *pdev)
 		} else {
 			mmc->rescan_entered = 0;
 		}
-		if (aml_card_type_non_sdio(pdata))
-			pdata->pins_default = pinctrl_lookup_state(host->pinctrl, "sd_default");
-
 		mmc->ops = &meson_mmc_ops;
+
+		if (aml_card_type_non_sdio(pdata)) {
+			pdata->pins_default = pinctrl_lookup_state(host->pinctrl, "sd_default");
+			if (mmc->slot.handler_priv) {
+				meson_mmc_cd_detect(mmc);
+				INIT_DELAYED_WORK(&pdata->cd_detect, meson_mmc_cd_detect_work);
+				schedule_delayed_work(&pdata->cd_detect, msecs_to_jiffies(500));
+			}
+			if (pdata->is_uart)
+				mmc->rescan_entered = 1;
+		}
+
 		mmc_add_host(mmc);
 
 		if (aml_card_type_sdio(pdata)) {/* if sdio_wifi */
@@ -2793,6 +2858,10 @@ free_host:
 static int g12a_mmc_remove(struct platform_device *pdev)
 {
 	struct meson_host *host = dev_get_drvdata(&pdev->dev);
+	struct amlsd_platform *pdata = host->mmc ? mmc_priv(host->mmc) : NULL;
+
+	if (pdata && aml_card_type_non_sdio(pdata))
+		cancel_delayed_work_sync(&pdata->cd_detect);
 
 	mmc_remove_host(host->mmc);
 
