@@ -1858,8 +1858,8 @@
 
 	sd_to_ao_uart_pins:sd_to_ao_uart_pins {
 		mux {
-			groups = "uart_ao_tx_a",
-				   "uart_ao_rx_a";
+			groups = "uart_ao_a_tx",
+				   "uart_ao_a_rx";
 				   function = "uart_ao_a";
 				   bias-pull-up;
 				   input-enable;
@@ -2101,6 +2101,27 @@
 			input-enable;
 			bias-pull-up;
 			drive-strength-microamp = <4000>;
+		};
+	};
+
+	ao_to_sd_uart_pins: ao_to_sd_uart_pins {
+		mux {
+			groups = "uart_ao_a_tx_c",
+				 "uart_ao_a_rx_c";
+			function = "uart_ao_a_c";
+			bias-pull-up;
+			input-enable;
+		};
+	};
+
+	sd_clr_noall_pins: sd_clr_noall_pins {
+		mux {
+			groups = "GPIOC_0",
+				 "GPIOC_1",
+				 "GPIOC_4",
+				 "GPIOC_5";
+			function = "gpio_periphs";
+			output-high;
 		};
 	};
 
