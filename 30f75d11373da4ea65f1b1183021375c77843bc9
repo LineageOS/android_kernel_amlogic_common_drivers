@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33566201_8ce12a45",
+        "filename": "arch/arm64/configs/kvim3_defconfig",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2026-10-22T17:09:08Z",
+      "side": 1,
+      "message": "shouldn\u0027t this have been in the commit to add kvim3 defconfig?",
+      "revId": "30f75d11373da4ea65f1b1183021375c77843bc9",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a368b3f_444c3737",
+        "filename": "arch/arm64/configs/kvim3_defconfig",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2026-10-22T17:09:08Z",
+      "side": 1,
+      "message": "also newline",
+      "revId": "30f75d11373da4ea65f1b1183021375c77843bc9",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
