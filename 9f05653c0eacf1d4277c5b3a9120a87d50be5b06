@@ -22,6 +22,30 @@
       },
       "revId": "9f05653c0eacf1d4277c5b3a9120a87d50be5b06",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dff3f5bb_d91cd443",
+        "filename": "arch/arm64/configs/kvim3_defconfig",
+        "patchSetId": 29
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 17162
+      },
+      "writtenOn": "2026-10-23T15:34:07Z",
+      "side": 1,
+      "message": "Yeas all khadas boards has it, I moved it to khadas fragment in 506375 but messed up commits chain, will try to sort it out",
+      "parentUuid": "a856185a_d5a581af",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 24
+      },
+      "revId": "9f05653c0eacf1d4277c5b3a9120a87d50be5b06",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
