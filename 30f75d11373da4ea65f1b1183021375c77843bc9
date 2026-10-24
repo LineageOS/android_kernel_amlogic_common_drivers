@@ -18,6 +18,24 @@
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f642d51e_ee33567e",
+        "filename": "arch/arm64/configs/kvim3_defconfig",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 17162
+      },
+      "writtenOn": "2026-10-24T16:46:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "33566201_8ce12a45",
+      "revId": "30f75d11373da4ea65f1b1183021375c77843bc9",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7a368b3f_444c3737",
@@ -31,6 +49,24 @@
       "writtenOn": "2026-10-22T17:09:08Z",
       "side": 1,
       "message": "also newline",
+      "revId": "30f75d11373da4ea65f1b1183021375c77843bc9",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0c9e43f2_92c03fa2",
+        "filename": "arch/arm64/configs/kvim3_defconfig",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 17162
+      },
+      "writtenOn": "2026-10-24T16:46:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a368b3f_444c3737",
       "revId": "30f75d11373da4ea65f1b1183021375c77843bc9",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
