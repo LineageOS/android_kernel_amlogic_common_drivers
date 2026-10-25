@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9dd6e4be_0247f873",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 17162
+      },
+      "writtenOn": "2026-10-25T08:33:24Z",
+      "side": 1,
+      "message": "verified on x96x9 - no moe warning and dtb flashed fine from recovery",
+      "revId": "dc262e54c15fe54ba1f446a1c7c70b2e24e7b19a",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
