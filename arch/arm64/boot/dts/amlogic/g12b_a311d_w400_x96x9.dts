@@ -209,6 +209,21 @@
 		};
 	};
 
+	openvfd {
+		compatible = "open,vfd";
+		dev_name = "openvfd";
+		status = "okay";
+		/* Pins match stock meson-vfd node */
+		openvfd_gpio_clk = <&gpio_ao GPIOAO_9 GPIO_ACTIVE_HIGH>;
+		openvfd_gpio_dat = <&gpio_ao GPIOAO_8 GPIO_ACTIVE_HIGH>;
+		openvfd_gpio_stb = <&gpio GPIOH_4 GPIO_ACTIVE_HIGH>;
+		/* < DHHMM > */
+		openvfd_chars = [04 00 01 02 03];
+		openvfd_dot_bits = [05 06 00 01 04 02 03 00];
+		/* type 0x0a (X96 X9), flags 0x01 (common anode), controller FD628 */
+		openvfd_display_type = <0x0001000a>;
+	};
+
 	bt-dev{
 		compatible = "amlogic, aml-bt";
 		dev_name = "bt-dev";
