@@ -471,6 +471,14 @@ void amlmmc_dtb_init(struct mmc_card *card, int *retp)
 	*retp = 0;
 	mmc_claim_host(card->host);
 
+	/*
+	 * With CONFIG_AMLOGIC_DTS_PARTITION both aml_emmc_partition_ops() and
+	 * add_dtbkey() get here. A second pass would reinit the live cdev and
+	 * its error path would cdev_del() it, leaving /dev/dtb returning ENXIO.
+	 */
+	if (!IS_ERR_OR_NULL(dtb_dev))
+		goto exit;
+
 	card_dtb = card;
 	pr_debug("%s: register dtb chardev", __func__);
 
