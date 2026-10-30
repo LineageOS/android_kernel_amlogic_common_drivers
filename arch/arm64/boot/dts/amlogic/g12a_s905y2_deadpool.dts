@@ -50,7 +50,7 @@
 	 * They are reachable only through a TEE.
 	 */
 	unifykey {
-		unifykey-num = <31>;
+		unifykey-num = <18>;
 
 		unifykey-index-18= <&keysn_18>;
 		unifykey-index-19= <&keysn_19>;
