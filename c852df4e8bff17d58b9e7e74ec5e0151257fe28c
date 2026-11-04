@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "66218d27_caff3bf5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3917
+      },
+      "writtenOn": "2026-11-04T20:51:37Z",
+      "side": 1,
+      "message": "Testcase is: go to recovery and pull the hdmi cable and plug it back in or switch input on multi-input monitor in recovery.\nOn nicepool this never comes back (without this patch).",
+      "revId": "c852df4e8bff17d58b9e7e74ec5e0151257fe28c",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
