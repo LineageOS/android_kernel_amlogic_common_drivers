@@ -293,6 +293,9 @@ static void free_reserved_mem(unsigned long start, unsigned long size)
 	struct page *page, *epage;
 
 	pr_info("%s %d logo start_addr=%lx, end=%lx\n", __func__, __LINE__, start, end);
+	if (!pfn_valid(PFN_DOWN(start)) || !pfn_valid(PFN_DOWN(end - 1)))
+		return;
+
 	page = phys_to_page(start);
 	if (PageHighMem(page)) {
 		free_reserved_highmem(start, end);
