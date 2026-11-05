@@ -60,6 +60,7 @@ dtb-y += sm1_s905d3_ac200_linux.dtb
 dtb-y += sm1_s905d3_ac200_debian.dtb
 dtb-y += sm1_s905d3_sabrina.dtb
 dtb-y += sm1_s905x3_ac214.dtb
+dtb-y += sm1_s905x3_bananapim5.dtb
 dtb-y += s5_s928x_ax208.dtb
 dtb-y += s5_s928x_ax209.dtb
 dtb-y += s5_s928x_ax201.dtb
