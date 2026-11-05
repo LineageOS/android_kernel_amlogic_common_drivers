@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "25883034_53df9ec2",
+        "filename": "arch/arm64/configs/amlogic_sabrina.fragment",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-11-05T10:45:23Z",
+      "side": 0,
+      "message": "Name it \"sabrina_defconfig\" to go along with naming convention already used for khadas boards.",
+      "revId": "91d935a59b011baf466e794145fc106437c9b45b",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
