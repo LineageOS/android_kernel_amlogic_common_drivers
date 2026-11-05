@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0
+
+menu "Google device drivers"
+
+source "$(COMMON_DRIVERS_DIR)/drivers/google/usb/Kconfig"
+
+config GOOGLE_USB_POWER_MONITOR
+	tristate "Google USB power monitor"
+	depends on HWMON
+	depends on POWER_SUPPLY
+	depends on THERMAL_OF
+	depends on GPIOLIB
+	help
+	  Reports the power available from the USB supply, through hwmon and
+	  as a thermal sensor.
+
+endmenu

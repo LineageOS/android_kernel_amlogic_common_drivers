@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0
+
+if TYPEC
+
+source "$(COMMON_DRIVERS_DIR)/drivers/google/usb/typec/tcpm/Kconfig"
+
+endif # TYPEC

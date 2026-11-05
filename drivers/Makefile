@@ -64,6 +64,7 @@ obj-$(CONFIG_AMLOGIC_SECKEY)		+= seckey/
 obj-$(CONFIG_AMLOGIC_USBCAM)		+= dvb_usbci/
 obj-$(CONFIG_AMLOGIC_AMFC)		+= amfc/
 obj-y					+= misc/
+obj-y					+= google/
 
 KBUILD_CFLAGS_MODULE += $(GKI_EXT_KERNEL_MODULE_PREDEFINE)
 all:
