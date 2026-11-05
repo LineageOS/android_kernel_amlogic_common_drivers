@@ -50,6 +50,7 @@ dtb-y += g12a_s905x2_u212_sti6130d3x0.dtb
 dtb-y += g12a_s905y2_deadpool.dtb
 dtb-y += g12a_s905y2_radxa0.dtb
 dtb-y += g12b_a311d_w400.dtb
+dtb-y += g12b_a311d_radxa02pro.dtb
 dtb-y += g12b_a311d_w400_x96x9.dtb
 dtb-y += g12b_a311d_w400_linux.dtb
 dtb-y += g12b_a311d_w400_debian.dtb
