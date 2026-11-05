@@ -3,11 +3,11 @@
  * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
  */
 
-#include "firmware_avb_Q.dtsi"
+#include "firmware_avb_deadpool.dtsi"
 
 / {
     partitions: partitions{
-		parts = <18>;
+		parts = <15>;
 		part-0 = <&logo>;
 		part-1 = <&recovery>;
 		part-2 = <&tee>;
@@ -15,112 +15,101 @@
 		part-4 = <&misc>;
 		part-5 = <&dtbo>;
 		part-6 = <&cri_data>;
-		part-7 = <&odm_ext>;
-		part-8 = <&rsv>;
-		part-9 = <&param>;
-		part-10 = <&boot>;
-		part-11 = <&oem>;
-		part-12 = <&bootloader_up>;
-		part-13 = <&metadata>;
-		part-14 = <&vbmeta>;
-		part-15 = <&super>;
-		part-16 = <&cache>;
-		part-17 = <&userdata>;
+		part-7 = <&param>;
+		part-8 = <&boot>;
+		part-9 = <&rsv>;
+		part-10 = <&metadata>;
+		part-11 = <&vbmeta>;
+		part-12 = <&super>;
+		part-13 = <&cache>;
+		part-14 = <&data>;
 
-		logo:logo{
+		logo:logo {
 			pname = "logo";
 			size = <0x0 0x800000>;
 			mask = <1>;
 		};
-		recovery:recovery{
+
+		recovery:recovery {
 			pname = "recovery";
 			size = <0x0 0x1800000>;
 			mask = <1>;
 		};
-		tee:tee{
+
+		tee:tee {
 			pname = "tee";
 			size = <0x0 0x2000000>;
 			mask = <1>;
 		};
-		factory:factory{
+
+		factory:factory {
 			pname = "factory";
 			size = <0x0 0x800000>;
-			mask = <0x11>;
+			mask = <11>;
 		};
-		misc:misc{
+
+		misc:misc {
 			pname = "misc";
 			size = <0x0 0x200000>;
-			mask = <0x2101>;
+			mask = <1>;
 		};
-		dtbo:dtbo{
+
+		dtbo:dtbo {
 			pname = "dtbo";
 			size = <0x0 0x200000>;
-			mask = <0x101>;
+			mask = <1>;
 		};
-		cri_data:cri_data
-		{
+
+		cri_data:cri_data {
 			pname = "cri_data";
 			size = <0x0 0x800000>;
-			mask = <0x102>;
+			mask = <2>;
 		};
-		odm_ext:odm_ext{
-			pname = "odm_ext";
-			size = <0x0 0x1000000>;
-			mask = <0x101>;
-		};
-		rsv:rsv
-		{
+
+		rsv:rsv {
 			pname = "rsv";
-			size = <0x0 0x300000>;
-			mask = <0x101>;
+			size = <0x0 0x1000000>;
+			mask = <1>;
 		};
-		param:param{
+
+		metadata:metadata {
+			pname = "metadata";
+			size = <0x0 0x1000000>;
+			mask = <1>;
+		};
+
+		vbmeta:vbmeta {
+			pname = "vbmeta";
+			size = <0x0 0x200000>;
+			mask = <1>;
+		};
+
+		param:param {
 			pname = "param";
 			size = <0x0 0x1000000>;
 			mask = <2>;
 		};
-		boot:boot
-		{
+
+		boot:boot {
 			pname = "boot";
-			size = <0x0 0x1700000>;
-			mask = <0x101>;
-		};
-		oem:oem{
-			pname = "oem";
 			size = <0x0 0x1000000>;
-			mask = <0x101>;
+			mask = <1>;
 		};
-		bootloader_up:bootloader_up
-		{
-			pname = "bootloader_up";
-			size = <0x0 0x600000>;
-			mask = <0x101>;
-		};
-		metadata:metadata{
-			pname = "metadata";
-			size = <0x0 0x1000000>;
-			mask = <0x101>;
-		};
-		vbmeta:vbmeta{
-			pname = "vbmeta";
-			size = <0x0 0x200000>;
-			mask = <0x101>;
-		};
-		super:super
-		{
+
+		super:super {
 			pname = "super";
-			size = <0x0 0x6AE00000>;
-			mask = <0x101>;
+			size = <0x0 0x64000000>;
+			mask = <1>;
 		};
-		cache:cache
-		{
+
+		cache:cache {
 			pname = "cache";
 			size = <0x0 0x32000000>;
 			mask = <2>;
 		};
-		userdata:userdata
-		{
-			pname = "userdata";
+
+		data:data {
+			pname = "data";
 			size = <0xffffffff 0xffffffff>;
 			mask = <4>;
 		};
