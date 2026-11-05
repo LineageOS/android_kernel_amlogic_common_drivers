@@ -983,6 +983,12 @@
 		io-channels = <&saradc SARADC_CH2>;
 		#thermal-sensor-cells = <0>;
 	};
+	usb_power_monitor: usb-power-monitor {
+		compatible = "google,usb-power-monitor";
+		bc_chg_det-gpio = <&gpio GPIOH_8 GPIO_ACTIVE_HIGH>;
+		typec_power_supply = <&rt1711h>;
+		#thermal-sensor-cells = <0>;
+	};
 	thermal-zones {
 		soc_pll_thermal: soc_pll_thermal {
 			polling-delay = <1000>;
@@ -1339,6 +1345,19 @@
 				gpufreq_cooling_map1 {
 					trip = <&skin_trip1>;
 					cooling-device = <&gpufreq_cool0 2 2>;
+				};
+			};
+		};
+
+		usb_power_vthermal: usb_power_vthermal {
+			polling-delay = <2000>;
+			polling-delay-passive = <1000>;
+			thermal-sensors = <&usb_power_monitor>;
+			trips {
+				usb_power_low: trip-point@0 {
+					temperature = <(-2500000)>;
+					hysteresis = <0>;
+					type = "passive";
 				};
 			};
 		};
@@ -1714,6 +1733,9 @@
 			sink-pdos = <PDO_FIXED(5000, 900, PDO_FIXED_USB_COMM)>;
 			op-sink-microwatt = <4500000>;
 			no-vconn = "true";
+			no-send-disc = "true";
+			send-initial-get-src-cap = "true";
+			initial-get-src-cap-delay-ms = <200>;
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
