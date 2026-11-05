@@ -1030,6 +1030,7 @@
 };
 
 &CPU0 {
+	/delete-property/ cpu-idle-states;
 	/*set multi table cpufreq max*/
 	multi_tables_available;
 	operating-points-v2 = <&cpu_opp_table0>,
@@ -1039,6 +1040,8 @@
 };
 
 &CPU1 {
+	reg = <0x0 0x1>;
+	/delete-property/ cpu-idle-states;
 	/*set multi table cpufreq max*/
 	multi_tables_available;
 	operating-points-v2 = <&cpu_opp_table0>,
@@ -1048,6 +1051,8 @@
 };
 
 &CPU2 {
+	reg = <0x0 0x2>;
+	/delete-property/ cpu-idle-states;
 	/*set multi table cpufreq max*/
 	multi_tables_available;
 	operating-points-v2 = <&cpu_opp_table0>,
@@ -1057,6 +1062,8 @@
 };
 
 &CPU3 {
+	reg = <0x0 0x3>;
+	/delete-property/ cpu-idle-states;
 	/*set multi table cpufreq max*/
 	multi_tables_available;
 	operating-points-v2 = <&cpu_opp_table0>,
