@@ -1835,8 +1835,11 @@
 	non-removable;
 	disable-wp;
 	//mmc-ddr-1_8v;
-	//mmc-hs200-1_8v;
-	//mmc-hs400-1_8v;
+	mmc-hs200-1_8v;
+	mmc-hs400-1_8v;
+	tx_delay = <16>;
+	hs4_core_phase = <0>;
+	hs_tx_phase = <0>;
 	//mmc-pwrseq = <&emmc_pwrseq>;
 	//vmmc-supply = <&vcc_3v3>;
 	//vqmmc-supply = <&vddio_boot>;
