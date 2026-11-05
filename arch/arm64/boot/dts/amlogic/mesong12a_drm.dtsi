@@ -3,7 +3,7 @@
  * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
  */
 #include <dt-bindings/display/meson-drm-ids.h>
-#include "mesong12a.dtsi"
+//#include "mesong12a.dtsi"
 
 / {
 	drm_amcvbsout: drm-amcvbsout {
