@@ -37,4 +37,5 @@
  */
 &sd_emmc_b2 {
 	/delete-property/ sd-uhs-sdr104;
+	cd-gpios = <&gpio GPIOC_6 GPIO_ACTIVE_LOW>;
 };
