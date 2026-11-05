@@ -52,6 +52,7 @@ dtb-y += g12b_a311d_w400_x96x9.dtb
 dtb-y += g12b_a311d_w400_linux.dtb
 dtb-y += g12b_a311d_w400_debian.dtb
 dtb-y += sm1_s905d3_ac200.dtb
+dtb-y += sm1_s905d3_radxa02.dtb
 dtb-y += sm1_s905d3_ac200_linux.dtb
 dtb-y += sm1_s905d3_ac200_debian.dtb
 dtb-y += sm1_s905d3_sabrina.dtb
