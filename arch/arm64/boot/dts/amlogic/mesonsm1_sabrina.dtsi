@@ -362,9 +362,9 @@
 			"vpu_clk0",
 			"vpu_clk1",
 			"vpu_clk";
-		clk_level = <7>;
-		/* 0: 100.0M    1: 166.7M    2: 200.0M    3: 250.0M */
-		/* 4: 333.3M    5: 400.0M    6: 500.0M    7: 666.7M */
+		clk_level = <8>;
+		/* 0: 24M       1: 100.0M    2: 166.7M    3: 200.0M    4: 250.0M */
+		/* 5: 333.3M    6: 400.0M    7: 500.0M    8: 666.7M */
 	};
 
 	vclk_serve: vclk_serve {
@@ -423,7 +423,7 @@
 	};
 
 	dwc3: dwc3@ff500000 {
-		compatible = "snps,dwc3";
+		compatible = "snps,dwc3-meson";
 		status = "disable";
 		reg = <0x0 0xff500000 0x0 0x100000>;
 		interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
@@ -431,6 +431,7 @@
 		maximum-speed = "super-speed";
 		snps,dis_u2_susphy_quirk;
 		snps,quirk-frame-length-adjustment;
+		snps,usb2-lpm-disable;
 		usb-phy = <&usb2_phy_v2>, <&usb3_phy_v2>;
 		clocks = <&clkc CLKID_USB>;
 		clock-names = "usb_general";
