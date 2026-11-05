@@ -12,6 +12,11 @@
 / {
 	model = "Radxa Zero";
 
+	memory@00000000 {
+		device_type = "memory";
+		linux,usable-memory = <0x0 0x000000 0x0 0x80000000>;
+	};
+
 	/*
 	 * The deadpool reference puts a green LED on GPIOAO_2 and a red one on
 	 * GPIOAO_4; neither is wired that way here, so the node stays empty and
