@@ -3967,6 +3967,12 @@ static int amhdmitx_probe(struct platform_device *pdev)
 	/* notify to drm hdmi */
 	hdmitx_fire_drm_hpd_cb_unlocked(&hdev->tx_comm);
 
+	/* request mbox for sm1 phy parameter configuration */
+	if (hdev->tx_hw.chip_data->chip_type == MESON_CPU_ID_SM1) {
+		hdev->mbox_chan = aml_mbox_request_channel_byidx(&pdev->dev, 0);
+		if (IS_ERR_OR_NULL(hdev->mbox_chan))
+			HDMITX_INFO(SYS "mbox_chan request error\n");
+	}
 	pr_debug(SYS "%s end\n", __func__);
 	/*everything is ready, create sysfs here.*/
 	hdmitx_sysfs_common_create(dev, &hdev->tx_comm, &hdev->tx_hw.base);
