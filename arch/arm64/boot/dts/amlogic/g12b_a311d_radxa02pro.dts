@@ -6,13 +6,13 @@
 /dts-v1/;
 
 #include "mesong12b.dtsi"
-#include "mesong12b_w400-panel.dtsi"
 #include "mesong12b_drm.dtsi"
-#include "partition_normal_linux.dtsi"
+#include "partition_mbox_dynamic_deadpool.dtsi"
 
 / {
-	amlogic-dt-id = "g12b_w400_a";
-	compatible = "g12b_w400_a";
+	model = "Radxa Zero 2 Pro";
+	amlogic-dt-id = "g12b_w400_b";
+	compatible = "amlogic, g12b", "radxa,zero2-pro";
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
 	#size-cells = <2>;
@@ -34,10 +34,6 @@
 		spi2 = &spicc1;
 	};
 
-	memory@00000000 {
-		device_type = "memory";
-		linux,usable-memory = <0x0 0x000000 0x0 0x80000000>;
-	};
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
@@ -327,7 +323,7 @@
 
 	gpio_keypad {
 		compatible = "amlogic, gpio_keypad";
-		status = "okay";
+		status = "disabled";
 		scan_period = <20>;
 		key_num = <1>;
 		key_name = "power";
@@ -1432,9 +1428,9 @@
 	pinctrl-names = "default", "clk-gate";
 	bus-width = <4>;
 	cap-sd-highspeed;
-	sd-uhs-sdr104;
+	sd-uhs-sdr50;
 	non-removable;
-	max-frequency = <200000000>;
+	max-frequency = <100000000>;
 	disable-wp;
 	cap-sdio-irq;
 	keep-power-in-suspend;
@@ -1522,9 +1518,7 @@
 };
 
 &ethmac {
-	status = "okay";
-	phy-handle = <&internal_ephy>;
-	phy-mode = "rmii";
+	status = "disabled";
 };
 
 &uart_A {
