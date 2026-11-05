@@ -22,6 +22,7 @@
 #include <linux/amlogic/media/vout/hdmitx_common/hdmitx_common.h>
 #include <linux/amlogic/media/vout/hdmitx_common/hdmitx_hw_common.h>
 #include <linux/amlogic/media/vout/hdmi_tx_repeater.h>
+#include <linux/amlogic/aml_mbox.h>
 #include "hw/hdmi_tx_hw.h"
 #include "../hdmitx_common/hdmitx_log.h"
 
@@ -168,6 +169,7 @@ struct hdmitx_dev {
 	struct vpu_dev_s *hdmi_vpu_dev;
 	struct vpu_dev_s *hdmitx_vpu_clk_gate_dev;
 #endif
+	struct mbox_chan *mbox_chan;
 	/*Platform related end.*/
 };
 
