@@ -1,0 +1,26 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target-path = "/";
+
+		__overlay__ {
+			bt-dev {
+				status = "okay";
+			};
+
+			wifi {
+				status = "okay";
+			};
+		};
+	};
+
+	fragment@1 {
+		target-path = "/serial@ffd24000";
+
+		__overlay__ {
+			status = "okay";
+		};
+	};
+};
