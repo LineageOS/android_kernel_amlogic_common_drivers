@@ -50,7 +50,7 @@
 		part-10 = <&tee>;
 		part-11 = <&super>;
 		part-12 = <&cache>;
-		part-13 = <&userdata>;
+		part-13 = <&data>;
 
 		logo:logo{
 			pname = "logo";
@@ -121,9 +121,9 @@
 			size = <0x0 0x32000000>;    /* 800 MiB */
 			mask = <2>;
 		};
-		userdata:userdata
+		data:data
 		{
-			pname = "userdata";
+			pname = "data";
 			size = <0xffffffff 0xffffffff>; /* rest of the disk */
 			mask = <4>;
 		};
