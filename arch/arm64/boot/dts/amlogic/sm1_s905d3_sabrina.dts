@@ -2474,6 +2474,7 @@
 
 &saradc {
 	status = "okay";
+	amlogic,no-processed-channels;
 };
 
 &ir {
