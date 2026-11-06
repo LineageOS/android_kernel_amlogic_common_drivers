@@ -54,6 +54,7 @@ dtb-y += g12b_a311d_radxa02pro.dtb
 dtb-y += g12b_a311d_w400_x96x9.dtb
 dtb-y += g12b_a311d_w400_linux.dtb
 dtb-y += g12b_a311d_w400_debian.dtb
+dtb-y += g12b_s922d_odroidn2.dtb
 dtb-y += sm1_s905d3_ac200.dtb
 dtb-y += sm1_s905d3_radxa02.dtb
 dtb-y += sm1_s905d3_ac200_linux.dtb
