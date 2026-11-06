@@ -1536,6 +1536,29 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
 	indio_dev->channels = priv->param->channels;
 	indio_dev->num_channels = priv->param->num_channels;
 
+	/*
+	 * IIO_CHAN_INFO_PROCESSED returns the 10-bit sample for adc_keypad and
+	 * friends, but in-kernel consumers using the IIO API read it as
+	 * millivolts. Let boards with such consumers drop it, so that they get
+	 * raw * scale instead.
+	 */
+	if (of_property_read_bool(pdev->dev.of_node,
+				  "amlogic,no-processed-channels")) {
+		struct iio_chan_spec *chans;
+
+		chans = devm_kmemdup(&pdev->dev, indio_dev->channels,
+				     indio_dev->num_channels * sizeof(*chans),
+				     GFP_KERNEL);
+		if (!chans)
+			return -ENOMEM;
+
+		for (i = 0; i < indio_dev->num_channels; i++)
+			chans[i].info_mask_separate &=
+				~BIT(IIO_CHAN_INFO_PROCESSED);
+
+		indio_dev->channels = chans;
+	}
+
 #if defined(CONFIG_IIO_KFIFO_BUF)
 	ret = of_property_read_bool(pdev->dev.of_node,
 				    "amlogic,enable-continuous-sampling");
