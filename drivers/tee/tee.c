@@ -662,9 +662,60 @@ bool tee_enabled(void)
 }
 EXPORT_SYMBOL(tee_enabled);
 
+static bool tee_use_smc_tvp(void)
+{
+	static int use_smc = -1;
+	struct tee_ioctl_open_session_arg sess_arg = { 0 };
+	struct tee_context *ctx;
+	uuid_t uuid = PTA_TVP_UUID;
+	u32 major = 0, minor = 0;
+	int ret;
+
+	if (use_smc != -1)
+		return use_smc == 1;
+
+	if (!tee_enabled())
+		return true;
+
+	tee_msg_os_revision(&major, &minor);
+	if (major < 3) {
+		use_smc = 1;
+		return true;
+	}
+
+	ctx = tee_client_open_context(NULL, optee_ctx_match, NULL, NULL);
+	if (IS_ERR(ctx))
+		return false;
+
+	memcpy(sess_arg.uuid, uuid.b, TEE_IOCTL_UUID_LEN);
+	sess_arg.clnt_login = TEE_IOCTL_LOGIN_PUBLIC;
+	ret = tee_client_open_session(ctx, &sess_arg, NULL);
+	if (ret < 0 || sess_arg.ret != TEEC_SUCCESS) {
+		use_smc = 1;
+	} else {
+		tee_client_close_session(ctx, sess_arg.session);
+		use_smc = 0;
+	}
+	tee_client_close_context(ctx);
+
+	return use_smc == 1;
+}
+
 /* This function will be deprecated */
 u32 tee_protect_tvp_mem(phys_addr_t start, size_t size, u32 *handle)
 {
+	struct arm_smccc_res res;
+
+	if (!handle)
+		return 0xFFFF0006;
+
+	if (tee_use_smc_tvp()) {
+		arm_smccc_smc(TEE_SMC_PROTECT_TVP_MEM,
+			      start, size, 0, 0, 0, 0, 0, &res);
+		*handle = res.a1;
+		return res.a0;
+	}
+
 	return tee_protect_mem(TEE_MEM_TYPE_STREAM_OUTPUT, 0, start, size, handle);
 }
 EXPORT_SYMBOL(tee_protect_tvp_mem);
@@ -672,6 +723,14 @@ EXPORT_SYMBOL(tee_protect_tvp_mem);
 /* This function will be deprecated */
 void tee_unprotect_tvp_mem(u32 handle)
 {
+	struct arm_smccc_res res;
+
+	if (tee_use_smc_tvp()) {
+		arm_smccc_smc(TEE_SMC_UNPROTECT_TVP_MEM,
+			      handle, 0, 0, 0, 0, 0, 0, &res);
+		return;
+	}
+
 	tee_unprotect_mem(handle);
 }
 EXPORT_SYMBOL(tee_unprotect_tvp_mem);
@@ -691,9 +750,17 @@ u32 tee_protect_mem(u32 type, u32 level,
 	uuid_t uuid = PTA_TVP_UUID;
 	struct tee_param param[TEE_PARAM_NUM] = { 0 };
 	struct tee_context *ctx = NULL;
+	struct arm_smccc_res res;
 
 	if (!handle)
 		return -EINVAL;
+
+	if (tee_use_smc_tvp()) {
+		arm_smccc_smc(TEE_SMC_PROTECT_MEM_BY_TYPE,
+			      type, start, size, level, 0, 0, 0, &res);
+		*handle = res.a1;
+		return res.a0;
+	}
 
 	ctx = tee_client_open_context(NULL, optee_ctx_match, NULL, NULL);
 	if (IS_ERR(ctx)) {
@@ -727,6 +794,13 @@ void tee_unprotect_mem(u32 handle)
 	uuid_t uuid = PTA_TVP_UUID;
 	struct tee_param param[TEE_PARAM_NUM] = { 0 };
 	struct tee_context *ctx = NULL;
+	struct arm_smccc_res res;
+
+	if (tee_use_smc_tvp()) {
+		arm_smccc_smc(TEE_SMC_UNPROTECT_MEM,
+			      handle, 0, 0, 0, 0, 0, 0, &res);
+		return;
+	}
 
 	ctx = tee_client_open_context(NULL, optee_ctx_match, NULL, NULL);
 	if (IS_ERR(ctx)) {
@@ -747,6 +821,13 @@ int tee_check_in_mem(phys_addr_t pa, size_t size)
 	uuid_t uuid = PTA_TVP_UUID;
 	struct tee_param param[TEE_PARAM_NUM] = { 0 };
 	struct tee_context *ctx = NULL;
+	struct arm_smccc_res res;
+
+	if (tee_use_smc_tvp()) {
+		arm_smccc_smc(TEE_SMC_CHECK_IN_MEM,
+			      pa, size, 0, 0, 0, 0, 0, &res);
+		return res.a0;
+	}
 
 	ctx = tee_client_open_context(NULL, optee_ctx_match, NULL, NULL);
 	if (IS_ERR(ctx)) {
@@ -773,6 +854,13 @@ int tee_check_out_mem(phys_addr_t pa, size_t size)
 	uuid_t uuid = PTA_TVP_UUID;
 	struct tee_param param[TEE_PARAM_NUM] = { 0 };
 	struct tee_context *ctx = NULL;
+	struct arm_smccc_res res;
+
+	if (tee_use_smc_tvp()) {
+		arm_smccc_smc(TEE_SMC_CHECK_OUT_MEM,
+			      pa, size, 0, 0, 0, 0, 0, &res);
+		return res.a0;
+	}
 
 	ctx = tee_client_open_context(NULL, optee_ctx_match, NULL, NULL);
 	if (IS_ERR(ctx)) {
@@ -799,6 +887,9 @@ u32 tee_register_mem(u32 type, phys_addr_t pa, size_t size)
 	uuid_t uuid = PTA_TVP_UUID;
 	struct tee_param param[TEE_PARAM_NUM] = { 0 };
 	struct tee_context *ctx = NULL;
+
+	if (tee_use_smc_tvp())
+		return -EOPNOTSUPP;
 
 	ctx = tee_client_open_context(NULL, optee_ctx_match, NULL, NULL);
 	if (IS_ERR(ctx)) {
