@@ -144,6 +144,7 @@ int optee_log_init(void)
 	size_t size = 0;
 	phys_addr_t begin = 0;
 	phys_addr_t end = 0;
+	bool is_v2_logger = false;
 	struct arm_smccc_res smccc = { 0 };
 	struct loopbuffer_ctl_s *log_ctl = NULL;
 
@@ -155,6 +156,7 @@ int optee_log_init(void)
 		size = end - begin;
 	} else if (smccc.a0 == OPTEE_SMC_RETURN_UNKNOWN_FUNCTION) {
 		/* v1 & v2, can not get log buffer config, use log buffer in share memory */
+		is_v2_logger = true;
 		memset(&smccc, 0, sizeof(smccc));
 		arm_smccc_smc(OPTEE_SMC_GET_SHM_CONFIG, 0, 0, 0, 0, 0, 0, 0, &smccc);
 		if (smccc.a0 != TEEC_SUCCESS) {
@@ -179,7 +181,10 @@ int optee_log_init(void)
 	}
 
 	memset(&smccc, 0, sizeof(smccc));
-	arm_smccc_smc(OPTEE_SMC_ENABLE_LOGGER, 1, 0, 0, 0, 0, 0, 0, &smccc);
+	if (is_v2_logger)
+		arm_smccc_smc(OPTEE_SMC_ENABLE_LOGGER, 1, begin, size, 0, 0, 0, 0, &smccc);
+	else
+		arm_smccc_smc(OPTEE_SMC_ENABLE_LOGGER, 1, 0, 0, 0, 0, 0, 0, &smccc);
 	if (smccc.a0 != TEEC_SUCCESS) {
 		pr_err("tee log buffer enable failed, res = 0x%lx\n", smccc.a0);
 		rc = -EACCES;
@@ -192,6 +197,8 @@ int optee_log_init(void)
 		rc = -EINVAL;
 		goto err;
 	}
+	if (is_v2_logger)
+		log_ctl->mode = 1;
 
 	/* init workqueue */
 	log_workqueue = create_singlethread_workqueue("tee-log-wq");
@@ -205,6 +212,10 @@ int optee_log_init(void)
 	return rc;
 
 err:
+	if (log_buf_va) {
+		memunmap(log_buf_va);
+		log_buf_va = NULL;
+	}
 	arm_smccc_smc(OPTEE_SMC_ENABLE_LOGGER, 0, 0, 0, 0, 0, 0, 0, &smccc);
 
 	return rc;
@@ -217,6 +228,12 @@ void optee_log_uninit(void)
 	if (log_workqueue) {
 		cancel_delayed_work_sync(&log_work);
 		destroy_workqueue(log_workqueue);
+		log_workqueue = NULL;
+	}
+
+	if (log_buf_va) {
+		memunmap(log_buf_va);
+		log_buf_va = NULL;
 	}
 
 	arm_smccc_smc(OPTEE_SMC_ENABLE_LOGGER, 0, 0, 0, 0, 0, 0, 0, &smccc);

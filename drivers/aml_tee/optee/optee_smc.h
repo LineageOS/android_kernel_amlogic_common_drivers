@@ -561,7 +561,9 @@ struct optee_smc_disable_shm_cache_result {
  * Call register usage:
  * a0      SMC Function ID, OPTEE_SMC_ENABLE_LOGGER
  * a1      Enable logger: a1 > 0; disable logger: a1 = 0;
- * a2-7    Not used
+ * a2      Logger shared memory physical address (OP-TEE v1/v2)
+ * a3      Logger shared memory size (OP-TEE v1/v2)
+ * a4-7    Not used
  *
  * Normal return register usage:
  * a0      Enable logger result
