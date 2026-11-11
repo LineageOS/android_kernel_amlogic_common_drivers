@@ -1654,7 +1654,6 @@
 	cd-gpios = <&gpio GPIOC_6 GPIO_ACTIVE_HIGH>;
 
 	cap-sdio-irq;
-	non-removable;
 	keep-power-in-suspend;
 
 	no-sdio;
