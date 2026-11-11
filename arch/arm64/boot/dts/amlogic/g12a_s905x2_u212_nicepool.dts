@@ -42,6 +42,7 @@
 		i2c4 = &i2c_AO;
 		spi0 = &spicc0;
 		spi1 = &spicc1;
+		mmc0 = &sd_emmc_c;
 	};
 
 	memory@00000000 {
