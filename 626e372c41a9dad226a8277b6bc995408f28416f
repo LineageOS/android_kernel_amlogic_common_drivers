@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "86aa3aaf_e56aed7e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-11-11T21:38:33Z",
+      "side": 1,
+      "message": "@chrmhoffmann@gmail.com can you please split out the dts part into its own change? And tell your LLM to write more concise commit messages.",
+      "revId": "626e372c41a9dad226a8277b6bc995408f28416f",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
