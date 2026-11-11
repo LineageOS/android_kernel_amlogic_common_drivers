@@ -196,7 +196,7 @@
 
 	gpioleds {
 		compatible = "gpio-leds";
-		status = "okay";
+		status = "disabled";
 
 		net_red {
 			label="net_red";
@@ -221,6 +221,20 @@
 			label="sys_led";
 			gpios=<&gpio_ao GPIOAO_11 GPIO_ACTIVE_LOW>;
 			default-state ="on";
+		};
+	};
+
+	pwmleds {
+		compatible = "pwm-leds";
+		status = "okay";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pwm_ao_a_pins>;
+
+		sys {
+			active-low;
+			label = "pwmled";
+			max-brightness = <255>;
+			pwms = <&pwm_AO_ab 0 50000 0>;
 		};
 	};
 
@@ -1038,6 +1052,10 @@
 	logo_addr = "0x7f800000";
 	mem_alloc = <0>;
 	pxp_mode = <0>; /** 0:normal mode 1:pxp mode */
+};
+
+&pwm_AO_ab {
+	status = "okay";
 };
 
 &pwm_AO_cd {
