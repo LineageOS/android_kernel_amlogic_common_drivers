@@ -52,6 +52,24 @@
       "parentUuid": "fa1b8a31_7ed66604",
       "revId": "f66cde45fec187809edbd5759f72448796aae017",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6c614551_870f27c2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-11-11T21:33:33Z",
+      "side": 1,
+      "message": "The things being uncommented do not hurt. I don\u0027t see a reason to add a config for that.",
+      "parentUuid": "14a0bb9a_c44e5d42",
+      "revId": "f66cde45fec187809edbd5759f72448796aae017",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
