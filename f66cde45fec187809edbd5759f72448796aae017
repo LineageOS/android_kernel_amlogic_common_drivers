@@ -16,6 +16,24 @@
       "message": "Works on nicepool but does it hurt others since touching mesong12a.dtsi?",
       "revId": "f66cde45fec187809edbd5759f72448796aae017",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa1b8a31_7ed66604",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-11-11T19:02:22Z",
+      "side": 1,
+      "message": "This needs testing on everything already up.",
+      "parentUuid": "d30fd8a9_55a45bc9",
+      "revId": "f66cde45fec187809edbd5759f72448796aae017",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
