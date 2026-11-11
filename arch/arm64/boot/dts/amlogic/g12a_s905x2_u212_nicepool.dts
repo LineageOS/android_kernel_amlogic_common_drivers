@@ -1059,7 +1059,9 @@
 };
 
 &pwm_AO_cd {
-		status = "okay";
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm_ao_d_pins3>;
 };
 
 &i2c0 {
