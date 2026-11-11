@@ -34,6 +34,24 @@
       "parentUuid": "d30fd8a9_55a45bc9",
       "revId": "f66cde45fec187809edbd5759f72448796aae017",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14a0bb9a_c44e5d42",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2026-11-11T21:08:19Z",
+      "side": 1,
+      "message": "this has been in my builds for a bit and nothing visible has exploded - sdcard still same as before.\n\nBut man, this is a lot, can we at least guard the g12a-mmc changes with a config about sd-uart? they were commented before so not like we\u0027d be duplicating anything?",
+      "parentUuid": "fa1b8a31_7ed66604",
+      "revId": "f66cde45fec187809edbd5759f72448796aae017",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
