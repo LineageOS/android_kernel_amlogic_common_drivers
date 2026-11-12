@@ -1634,7 +1634,12 @@
 	bus-width = <4>;
 	cap-sd-highspeed;
 	sd-uhs-sdr104;
-	max-frequency = <200000000>;
+	/*
+	 * Workaround: dopinder's RTL8822CS gets CMD53 data CRC errors at
+	 * 200MHz SDR104 on 5.15 (4.9 ran it at 200MHz fine), so cap at
+	 * ~166.67MHz until the 5.15 SDR104 timing difference is found.
+	 */
+	max-frequency = <166666667>;
 	disable-wp;
 
 	pinctrl-0 = <&sdio_x_clr_pins &sdcard_pins>;
