@@ -16,6 +16,24 @@
       "message": "Why does it keep using this annotation randomly?",
       "revId": "053dbf7dd49d14c38f8af488702285cb781294c1",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e38e83e3_d07f50a8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2026-11-16T18:17:26Z",
+      "side": 1,
+      "message": "No idea, it\u0027s in my global prompt correctly so frankly, no idea.",
+      "parentUuid": "69e45b99_f566403e",
+      "revId": "053dbf7dd49d14c38f8af488702285cb781294c1",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
