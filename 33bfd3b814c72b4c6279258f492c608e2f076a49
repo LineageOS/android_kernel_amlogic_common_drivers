@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "421e3fad_41fbc135",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2026-11-16T18:18:26Z",
+      "side": 1,
+      "message": "this fixes sleep on dopinder/wade/nicepool",
+      "revId": "33bfd3b814c72b4c6279258f492c608e2f076a49",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
