@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69e45b99_f566403e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-11-16T17:58:50Z",
+      "side": 1,
+      "message": "Why does it keep using this annotation randomly?",
+      "revId": "053dbf7dd49d14c38f8af488702285cb781294c1",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
