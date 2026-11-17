@@ -8,11 +8,12 @@
 #include "mesonsm1.dtsi"
 #include "mesonsm1_drm.dtsi"
 #include "mesonsm1_ac200-panel.dtsi"
-#include "partition_normal_linux.dtsi"
+#include "partition_mbox_dynamic_deadpool.dtsi"
 
 / {
-	amlogic-dt-id = "sm1_ac200_2g";
-	compatible = "sm1_ac200_2g";
+	model = "BPI M5";
+	amlogic-dt-id = "sm1_ac213_4g";
+	compatible = "sm1_ac213_4g";
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
 	#size-cells = <2>;
@@ -192,27 +193,35 @@
 	};
 	gpioleds {
 		compatible = "gpio-leds";
-		status = "disabled";
+		status = "okay";
+
+		net_led {
+			label = "net_led";
+			gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+			linux,default-trigger = "netdev";
+		};
 
 		sys_led {
 			label="sys_led";
-			gpios=<&gpio_ao GPIOAO_11 GPIO_ACTIVE_HIGH>;
+			gpios=<&gpio_ao GPIOAO_11 GPIO_ACTIVE_LOW>;
 			default-state ="on";
+			linux,default-trigger = "heartbeat";
 		};
 	};
 
-	bt-dev{
+	bt-dev {
 		compatible = "amlogic, aml-bt";
 		dev_name = "bt-dev";
-		status = "okay";
+		status = "disabled";
 		reset-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
 		hostwake-gpios = <&gpio GPIOX_19 GPIO_ACTIVE_HIGH>;
 	};
 
-	wifi{
+	wifi {
 		compatible = "amlogic, aml-wifi";
 		dev_name = "aml_wifi";
-		status = "okay";
+		status = "disabled";
 		interrupt-gpios = <&gpio GPIOX_7 GPIO_ACTIVE_HIGH>;
 		irq_trigger_type = "IRQF_TRIGGER_LOW";
 		power_on-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_HIGH>;
@@ -427,7 +436,7 @@
 	unifykey{
 		compatible = "amlogic,unifykey";
 		status = "ok";
-		unifykey-num = <17>;
+		unifykey-num = <20>;
 		unifykey-index-0 = <&keysn_0>;
 		unifykey-index-1 = <&keysn_1>;
 		unifykey-index-2 = <&keysn_2>;
@@ -445,6 +454,9 @@
 		unifykey-index-14= <&keysn_14>;
 		unifykey-index-15= <&keysn_15>;
 		unifykey-index-16= <&keysn_16>;
+		unifykey-index-17= <&keysn_17>;
+		unifykey-index-18= <&keysn_18>;
+		unifykey-index-19= <&keysn_19>;
 
 		keysn_0: key_0{
 			key-name = "usid";
@@ -532,6 +544,21 @@
 		keysn_16:key_16{
 			key-name = "netflix_mgkid";
 			key-device = "secure";
+			key-permit = "read","write","del";
+		};
+		keysn_17:key_17{
+			key-name = "oemkey";
+			key-device = "normal";
+			key-permit = "read","write","del";
+		};
+		keysn_18:key_18{
+			key-name = "eth_exphy_para";
+			key-device = "normal";
+			key-permit = "read","write","del";
+		};
+		keysn_19:key_19{
+			key-name = "dtbo";// dtbo idx
+			key-device = "normal";
 			key-permit = "read","write","del";
 		};
 	};//End unifykey
@@ -824,9 +851,9 @@
 
 	vbat: fixedregulator@vbat {
 		compatible = "regulator-fixed";
-		regulator-name = "12V";
-		regulator-min-microvolt = <12000000>;
-		regulator-max-microvolt = <12000000>;
+		regulator-name = "5V";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
 		regulator-boot-on;
 		regulator-always-on;
 	};
@@ -838,21 +865,8 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 		pinctrl-names = "default";
-		//GPIOH_8(OD) Set:
-		// Output disable= Enable VCC5V
-		//gpio = <&gpio GPIOH_8 GPIO_ACTIVE_HIGH>;
 		startup-delay-us = <70000>;
 		enable-active-high;
-		regulator-boot-on;
-		regulator-always-on;
-	};
-
-	vddq_reg: fixedregulator@vddq {
-		compatible = "regulator-fixed";
-		vin-supply = <&vbat>;
-		regulator-name = "VDDQ";
-		regulator-min-microvolt = <1200000>;
-		regulator-max-microvolt = <1200000>;
 		regulator-boot-on;
 		regulator-always-on;
 	};
@@ -869,14 +883,11 @@
 
 	vcc3v3_reg: fixedregulator@vcc3v3 {
 		compatible = "regulator-fixed";
-		vin-supply = <&vddao3v3_reg>;
+		vin-supply = <&vbat>;
 		regulator-name = "VCC3.3V";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 		pinctrl-names = "default";
-		//TEST_N(High) Set:
-		//Output L= Disable VCC3.3V
-		//Output H= Enable VCC3.3V
 		gpio = <&gpio_ao GPIO_TEST_N GPIO_ACTIVE_HIGH>;
 		startup-delay-us = <70000>;
 		enable-active-high;
@@ -884,18 +895,8 @@
 		regulator-always-on;
 	};
 
-	vcc1v8_reg: fixedregulator@vcc1v8 {
-		vin-supply = <&vcc3v3_reg>;
-		compatible = "regulator-fixed";
-		regulator-name = "VCC1.8V";
-		regulator-min-microvolt = <1800000>;
-		regulator-max-microvolt = <1800000>;
-		regulator-boot-on;
-		regulator-always-on;
-	};
-
 	flash_1v8_reg: fixedregulator@flash_1v8 {
-		vin-supply = <&vcc3v3_reg>;
+		vin-supply = <&vddao3v3_reg>;
 		compatible = "regulator-fixed";
 		regulator-name = "FLASH_1.8V";
 		regulator-min-microvolt = <1800000>;
@@ -920,13 +921,11 @@
 		vin-supply = <&vddao3v3_reg>;
 		regulator-min-microvolt = <1800000>;
 		regulator-max-microvolt = <3300000>;
-		// L/HiZ: 3.3V, H: 1.8V
-		gpio = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
-		gpios-states = <0>;
+		enable-gpio = <&gpio_ao GPIOE_2 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		gpios = <&gpio_ao GPIOAO_6 GPIO_ACTIVE_HIGH>;
+		gpios-states = <1>;
 		regulator-boot-on;
-		//regulator-always-on;
-
-		/* Based on P200 schematics, signal CARD_1.8V/3.3V_CTR */
 		states = <1800000 1
 			  3300000 0>;
 	};
@@ -1239,7 +1238,7 @@
 };
 
 &i2c2 {
-	status = "okay";
+	status = "disabled";
 	pinctrl-names="default";
 	pinctrl-0=<&i2c2_master_pins3>;
 	clock-frequency = <100000>;
@@ -1252,7 +1251,7 @@
 };
 
 &i2c3 {
-	status = "okay";
+	status = "disabled";
 	pinctrl-names="default";
 	pinctrl-0=<&i2c3_master_pins2>;
 	clock-frequency = <100000>; /* default 100k */
@@ -1669,6 +1668,10 @@
 	status = "disabled";
 };
 
+&lcd {
+	status = "disabled";
+};
+
 &pinctrl_periphs {
 	tdmout_a: tdmout_a {
 		mux { /* GPIOX_11, GPIOX_10, GPIOX_9 */
@@ -1799,7 +1802,7 @@
 /* Audio Related End */
 
 &pwm_ef {
-	status = "okay";
+	status = "disabled";
 };
 
 &dwc2_a {
@@ -1821,14 +1824,30 @@
 	status = "okay";
 	portnum = <1>;
 	otg = <1>;
-	gpio-vbus-power = "GPIOH_6";
-	gpios = <&gpio GPIOH_6 GPIO_ACTIVE_HIGH>;
+};
+
+&ext_mdio {
+	external_phy: ethernet-phy@0 {
+		reg = <0>;
+		max-speed = <1000>;
+		reset-assert-us = <20000>;
+		reset-deassert-us = <50000>;
+	};
 };
 
 &ethmac {
 	status = "okay";
-	phy-handle = <&internal_ephy>;
-	phy-mode = "rmii";
+	pinctrl-names = "default";
+	pinctrl-0 = <&external_eth_pins>;
+	phy-mode = "rgmii";
+	phy-handle = <&external_phy>;
+	internal_phy = <2>;
+
+	mc_val = <0x1621>;
+	cali_val = <0x00000>;
+	rx_delay = <1>;
+	auto_cali_idx = <0>;
+	amlogic,tx-delay-ns = <2>;
 };
 
 &uart_A {
@@ -1876,11 +1895,13 @@
 	non-removable;
 	disable-wp;
 	//mmc-ddr-1_8v;
-	//mmc-hs200-1_8v;
-	//mmc-hs400-1_8v;
+	mmc-hs200-1_8v;
+	mmc-hs400-1_8v;
+	tx_delay = <16>;
+	hs4_core_phase = <0>;
 	//mmc-pwrseq = <&emmc_pwrseq>;
-	//vmmc-supply = <&vcc_3v3>;
-	//vqmmc-supply = <&vddio_boot>;
+	//vmmc-supply = <&vcc3v3_reg>;
+	//vqmmc-supply = <&flash_1v8_reg>;
 };
 
 &sd_emmc_b {
