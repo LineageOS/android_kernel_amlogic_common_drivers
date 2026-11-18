@@ -16,6 +16,24 @@
       "message": "lowercase",
       "revId": "08ca5b70b188388dd00afecb59fe10afad3e2287",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c290052c_f13eec94",
+        "filename": "arch/arm64/boot/dts/amlogic/Makefile",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2026-11-18T22:35:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e41ec1d7_6d33d94f",
+      "revId": "08ca5b70b188388dd00afecb59fe10afad3e2287",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
