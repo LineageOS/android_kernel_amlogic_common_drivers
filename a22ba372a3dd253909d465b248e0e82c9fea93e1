@@ -16,6 +16,24 @@
       "message": "Link is dead",
       "revId": "a22ba372a3dd253909d465b248e0e82c9fea93e1",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d35d68eb_f8f5de1e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2026-11-18T22:21:05Z",
+      "side": 1,
+      "message": "https://github.com/LineageOS/android_kernel_amlogic_linux-4.9/blob/lineage-22.2/arch/arm64/boot/dts/amlogic/sm1_s905x3_bananapim5_wifi_overlay.dts\n\nrenamed from y3 to x3",
+      "parentUuid": "2642f59a_3a2cf2c0",
+      "revId": "a22ba372a3dd253909d465b248e0e82c9fea93e1",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
