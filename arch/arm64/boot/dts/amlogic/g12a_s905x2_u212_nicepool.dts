@@ -150,36 +150,6 @@
 		};
 	};
 
-	gpioleds {
-		compatible = "gpio-leds";
-		status = "disabled";
-
-		net_red {
-			label="net_red";
-			gpios=<&gpio GPIOA_14 GPIO_ACTIVE_LOW>;
-			default-state ="on";
-		};
-
-		net_green {
-			label="net_green";
-			gpios=<&gpio GPIOA_15 GPIO_ACTIVE_HIGH>;
-			default-state ="on";
-		};
-
-		remote_led {
-			label = "remote_led";
-			gpios = <&gpio_ao GPIOAO_10 GPIO_ACTIVE_LOW>;
-			default-state = "off";
-			linux,default-trigger = "rc_feedback";
-		};
-
-		sys_led {
-			label="sys_led";
-			gpios=<&gpio_ao GPIOAO_11 GPIO_ACTIVE_LOW>;
-			default-state ="on";
-		};
-	};
-
 	pwmleds {
 		compatible = "pwm-leds";
 		status = "okay";
