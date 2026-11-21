@@ -16,6 +16,23 @@
       "message": "Seems not neede/wrong - abandoning",
       "revId": "a4ad1464128021ce952d0c7b30d5ca26c2874978",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b543b40_c421b827",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-11-21T22:00:10Z",
+      "side": 1,
+      "message": "Are you fixing the chain? You left it broken.",
+      "revId": "a4ad1464128021ce952d0c7b30d5ca26c2874978",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ],
   "submitRequirementResults": [
