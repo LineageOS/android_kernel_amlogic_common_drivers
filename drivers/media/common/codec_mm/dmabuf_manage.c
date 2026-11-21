@@ -56,10 +56,14 @@ static u32 secure_vdec_config = 0x7C;
 #define SIZE_MB (1024 * 1024)
 
 #if IS_ENABLED(CONFIG_AMLOGIC_OPTEE)
+#define TEEC_ERROR_BAD_PARAMETERS			0xffff0006U
+#define TEEC_ERROR_NOT_SUPPORTED			0xffff000aU
+
 #define DMABUF_MANAGE_BLOCK_MIN_SIZE_KB				(256 * 1024)
 
 #define TA_SECMEM_CMD_GET_NO_HEAD_SUPPORT			2
 #define TA_SECMEM_V2_CMD_INIT						294
+#define TA_SECMEM_V2_CMD_INIT_LEGACY				250
 #define TA_SECMEM_V2_CMD_MEM_CREATE					251
 #define TA_SECMEM_V2_CMD_MEM_FREE					258
 #define TA_SECMEM_V2_CMD_CLOSE						266
@@ -98,6 +102,7 @@ struct secure_pool_info {
 	u32 id_low;
 	u32 block_size;
 	u32 channel_register;
+	u32 tvp_enabled;
 #if IS_ENABLED(CONFIG_AMLOGIC_OPTEE)
 	struct tee_ioctl_open_session_arg secmem_session;
 	struct tee_shm *shm_pool;
@@ -731,6 +736,8 @@ error_alloc_object:
 	return -EFAULT;
 }
 
+static long dmabuf_manage_import(unsigned long args, int extend);
+
 static long dmabuf_manage_get_handle(unsigned long args)
 {
 	int ret;
@@ -750,9 +757,14 @@ static long dmabuf_manage_get_handle(unsigned long args)
 		pr_error("dma_buf_get failed\n");
 		goto error_get;
 	}
+	if (dbuf->ops != &dmabuf_manage_ops || !dbuf->priv) {
+		res = -EINVAL;
+		dma_buf_put(dbuf);
+		goto error_get;
+	}
 	block = dbuf->priv;
 	if (block->extend)
-		res = block->handle;
+		res = block->extend_handle;
 	else
 		res = (long)(block->handle & (0xffffffff));
 	dma_buf_put(dbuf);
@@ -761,7 +773,7 @@ error_copy:
 	return res;
 }
 
-static long dmabuf_manage_get_phyaddr(unsigned long args)
+static long dmabuf_manage_get_phyaddr(unsigned long args, int extend)
 {
 	int ret;
 	long res = -EFAULT;
@@ -780,9 +792,13 @@ static long dmabuf_manage_get_phyaddr(unsigned long args)
 		pr_error("dma_buf_get failed\n");
 		goto error_get;
 	}
+	if (dbuf->ops != &dmabuf_manage_ops || !dbuf->priv) {
+		dma_buf_put(dbuf);
+		return dmabuf_manage_import(args, extend);
+	}
 	block = dbuf->priv;
-	if (block->extend)
-		res = block->paddr;
+	if (extend || block->extend)
+		res = block->extend ? block->extend_paddr : block->paddr;
 	else
 		res = (long)(block->paddr & (0xffffffff));
 	dma_buf_put(dbuf);
@@ -791,7 +807,7 @@ error_copy:
 	return res;
 }
 
-static long dmabuf_manage_import(unsigned long args)
+static long dmabuf_manage_import(unsigned long args, int extend)
 {
 	int ret;
 	long res = -EFAULT;
@@ -824,11 +840,14 @@ static long dmabuf_manage_import(unsigned long args)
 		goto error_map;
 	}
 	paddr = sg_dma_address(sgt->sgl);
-	block = dbuf->priv;
-	if (block->extend)
+	if (extend) {
 		res = paddr;
-	else
+	} else if (dbuf->ops == &dmabuf_manage_ops && dbuf->priv) {
+		block = dbuf->priv;
+		res = block->extend ? paddr : (long)(paddr & (0xffffffff));
+	} else {
 		res = (long)(paddr & (0xffffffff));
+	}
 	dma_buf_unmap_attachment(attach, sgt, DMA_FROM_DEVICE);
 error_map:
 	dma_buf_detach(dbuf, attach);
@@ -1348,18 +1367,79 @@ static int dmabuf_manage_secure_v2_init(struct secure_pool_info *pool, u32 flags
 	res = tee_client_invoke_func(g_secmem_context, &inv_arg, param);
 	if (!res) {
 		if (inv_arg.ret != TEEC_SUCCESS) {
-			pr_error("%s invoke func failed %d  0x%x 0x%x 0x%x\n",
-				__func__, res, inv_arg.ret, inv_arg.ret_origin,
-				(u32)param[3].u.value.a);
 			res = inv_arg.ret;
-		} else {
-			if (param[3].u.value.a != TEEC_SUCCESS) {
-				pr_error("%s invoke func failed %d 0x%x 0x%x 0x%x\n",
+		} else if (param[3].u.value.a != TEEC_SUCCESS) {
+			res = (u32)param[3].u.value.a;
+		}
+	}
+
+	if (res == TEEC_ERROR_BAD_PARAMETERS || res == TEEC_ERROR_NOT_SUPPORTED ||
+	    (param[3].u.value.a == TEEC_ERROR_BAD_PARAMETERS) ||
+	    (param[3].u.value.a == TEEC_ERROR_NOT_SUPPORTED)) {
+		pr_info("%s TA_SECMEM_V2_CMD_INIT (294) failed with 0x%x, falling back to legacy CMD 250\n",
+			__func__, res ? (u32)res : (u32)param[3].u.value.a);
+		in_len = 0;
+		memset(param, 0, sizeof(param));
+		memset(&inv_arg, 0, sizeof(inv_arg));
+
+		res = dmabuf_manage_tee_pack_u32(shm_data, TA_SECMEM_V2_CMD_INIT_LEGACY, &in_len);
+		if (res)
+			goto error;
+		res = dmabuf_manage_tee_pack_u32(shm_data, 1, &in_len);
+		if (res)
+			goto error;
+		/*
+		 * Legacy CMD 250 cannot bind/share a pool with userspace SecureVdecPool;
+		 * clear bit 8 (0x100, 12 MB 4K pool) so the startup-only kernel session
+		 * uses 4 MB and leaves 12 MB available in OP-TEE's ES pool for userspace.
+		 */
+		res = dmabuf_manage_tee_pack_u32(shm_data, config & ~0x100U, &in_len);
+		if (res)
+			goto error;
+		res = dmabuf_manage_tee_pack_u32(shm_data, 0, &in_len);
+		if (res)
+			goto error;
+		res = dmabuf_manage_tee_pack_u32(shm_data, 0, &in_len);
+		if (res)
+			goto error;
+
+		param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INOUT;
+		param[0].u.memref.shm = pool->shm_pool;
+		param[0].u.memref.size = in_len;
+		param[0].u.memref.shm_offs = 0;
+		param[3].attr = TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_OUTPUT;
+
+		inv_arg.func = TA_SECMEM_V2_CMD_INIT_LEGACY;
+		inv_arg.session = pool->secmem_session.session;
+		inv_arg.num_params = TEE_CMD_PARAM_NUM;
+		res = tee_client_invoke_func(g_secmem_context, &inv_arg, param);
+		if (!res) {
+			if (inv_arg.ret != TEEC_SUCCESS) {
+				pr_error("%s legacy invoke func failed %d 0x%x 0x%x 0x%x\n",
+					__func__, res, inv_arg.ret, inv_arg.ret_origin,
+					(u32)param[3].u.value.a);
+				res = inv_arg.ret;
+			} else if (param[3].u.value.a != TEEC_SUCCESS) {
+				pr_error("%s legacy invoke func failed %d 0x%x 0x%x 0x%x\n",
 					__func__, res, inv_arg.ret, inv_arg.ret_origin,
 					(u32)param[3].u.value.a);
 				res = param[3].u.value.a;
+			} else {
+				res = 0;
 			}
 		}
+	} else if (res) {
+		pr_error("%s invoke func failed %d  0x%x 0x%x 0x%x\n",
+			__func__, res, inv_arg.ret, inv_arg.ret_origin,
+			(u32)param[3].u.value.a);
+	}
+
+	if (!res && tvp_flag && !codec_mm_video_tvp_enabled()) {
+		int tvp_res = codec_mm_enable_tvp(0, tvp_flag);
+		if (tvp_res)
+			pr_warn("%s: codec_mm_enable_tvp(%u) returned %d\n", __func__, tvp_flag, tvp_res);
+		else
+			pool->tvp_enabled = tvp_flag;
 	}
 
 error:
@@ -1587,6 +1667,11 @@ static void dmabuf_manage_destroy_secmem_pool(struct secure_pool_info *pool)
 		return;
 
 	if (list_empty(&pool->block_node)) {
+		if (pool->tvp_enabled) {
+			codec_mm_disable_tvp();
+			pool->tvp_enabled = 0;
+		}
+
 		if (pool->shm_pool) {
 			shm_data = tee_shm_get_va(pool->shm_pool, 0);
 			if (IS_ERR(shm_data)) {
@@ -2101,10 +2186,10 @@ static long dmabuf_manage_ioctl(struct file *filep, unsigned int cmd,
 		ret = dmabuf_manage_get_handle(args);
 		break;
 	case DMABUF_MANAGE_GET_PHYADDR:
-		ret = dmabuf_manage_get_phyaddr(args);
+		ret = dmabuf_manage_get_phyaddr(args, 0);
 		break;
 	case DMABUF_MANAGE_IMPORT_DMA:
-		ret = dmabuf_manage_import(args);
+		ret = dmabuf_manage_import(args, 0);
 		break;
 	case DMABUF_MANAGE_REGISTER_CHANNEL:
 		ret = dmabuf_manage_register_channel(args);
@@ -2132,10 +2217,10 @@ static long dmabuf_manage_ioctl(struct file *filep, unsigned int cmd,
 		ret = dmabuf_manage_get_handle(args);
 		break;
 	case DMABUF_MANAGE_EXTEND_GET_PHYADDR:
-		ret = dmabuf_manage_get_phyaddr(args);
+		ret = dmabuf_manage_get_phyaddr(args, 1);
 		break;
 	case DMABUF_MANAGE_EXTEND_IMPORT_DMA:
-		ret = dmabuf_manage_import(args);
+		ret = dmabuf_manage_import(args, 1);
 		break;
 	case DMABUF_MANAGE_EXTEND_REGISTER_CHANNEL:
 		ret = dmabuf_manage_register_channel(args);
