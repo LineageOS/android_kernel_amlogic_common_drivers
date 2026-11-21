@@ -862,69 +862,13 @@
 	pinctrl-names="default";
 	pinctrl-0=<&i2c0_master_pins2>;
 	clock-frequency = <400000>;
-
-	gt9xx@5d {
-		compatible = "goodix,gt9xx";
-		status = "disabled";
-		reg = <0x5d>;
-		reset-gpio = <&gpio GPIOZ_9 0x00>;
-		irq-gpio = <&gpio GPIOZ_3 0x00>;
-	};
-
-	ftxx@38 {
-		compatible = "focaltech,fts";
-		status = "disabled";
-		reg = <0x38>;
-		reset-gpio = <&gpio GPIOZ_9 0x00>;
-		irq-gpio = <&gpio GPIOZ_3 0x00>;
-		x_max = <600>;
-		y_max = <1024>;
-		max-touch-number = <10>;
-	};
 };
-
-/*
- *if use i2c2_master_pins2
- *please disable internal_eth_pins
- *in case pinmux conflict
- */
-/*&i2c2 {
- *	status = "okay";
- *	pinctrl-names="default";
- *	pinctrl-0=<&i2c2_master_pins2>;
- *	clock-frequency = <300000>;
- *};
- */
 
 &i2c3 {
 	status = "okay";
 	pinctrl-names="default";
 	pinctrl-0=<&i2c3_master_pins2>;
 	clock-frequency = <300000>; /* default 100k */
-
-	/* for ref board */
-	ad82584f_62: ad82584f_62@31 {
-		compatible = "ESMT, ad82584f";
-		#sound-dai-cells = <0>;
-		reg = <0x31>;
-		status = "disabled";
-		reset_pin = <&gpio GPIOA_5 0>;
-	};
-
-	tas5707_36: tas5707_36@1b {
-		compatible = "ti,tas5707";
-		#sound-dai-cells = <0>;
-		reg = <0x1b>;
-		status = "disabled";
-		reset_pin = <&gpio GPIOA_5 0>;
-	};
-
-	bl_extern_i2c: bl_extern_i2c@2c {
-		compatible = "amlogic, bl_extern_i2c";
-		status = "disabled";
-		reg = <0x2c>; /*reg_address for lp8556*/
-		dev_name = "lp8556";
-	};
 };
 
 &audiobus {
@@ -1263,28 +1207,6 @@
 //	vqmmc-supply = <&vddao_1v8>;
 };
 
-//&sd_emmc_b1 {
-//	status = "disabled";
-//	sd {
-//		pinctrl-0 = <&sdcard_pins>;
-//		pinctrl-1 = <&sdcard_clk_gate_pins>;
-//		pinctrl-2 = <&sd_1bit_pins>;
-//
-//		pinctrl-names = "sd_default",
-//				"clk-gate",
-//				"sd_1bit_pins";
-//		cd-gpios = <&gpio GPIOC_6 GPIO_ACTIVE_HIGH>;
-//
-//		bus-width = <4>;
-//		cap-sd-highspeed;
-//		max-frequency = <200000000>;
-//		disable-wp;
-//		card_type = <5>;
-//		no-sdio;
-//		no-mmc;
-//	};
-//};
-
 &sd_emmc_b2 {
 	status = "okay";
 	bus-width = <4>;
@@ -1314,73 +1236,6 @@
 	no-sd;
 };
 
-&nand {
-	status = "disabled";
-	plat-names = "bootloader","nandnormal";
-	plat-num = <2>;
-	plat-part-0 = <&bootloader>;
-	plat-part-1 = <&nandnormal>;
-	bootloader: bootloader{
-		enable_pad ="ce0";
-		busy_pad = "rb0";
-		timming_mode = "mode5";
-		bch_mode = "bch8_1k";
-		t_rea = <20>;
-		t_rhoh = <15>;
-		chip_num = <1>;
-		part_num = <0>;
-		rb_detect = <1>;
-	};
-	nandnormal: nandnormal{
-		enable_pad ="ce0";
-		busy_pad = "rb0";
-		timming_mode = "mode5";
-		bch_mode = "bch8_1k";
-		plane_mode = "twoplane";
-		t_rea = <20>;
-		t_rhoh = <15>;
-		chip_num = <2>;
-		part_num = <3>;
-		partition = <&nand_partitions>;
-		rb_detect = <1>;
-	};
-	nand_partitions:nand_partition{
-		/*
-		 * if bl_mode is 1, tpl size was generate by
-		 * fip_copies * fip_size which
-		 * will not skip bad when calculating
-		 * the partition size;
-		 *
-		 * if bl_mode is 0,
-		 * tpl partition must be comment out.
-		 */
-		tpl{
-			offset=<0x0 0x0>;
-			size=<0x0 0x0>;
-		};
-		logo{
-			offset=<0x0 0x0>;
-			size=<0x0 0x200000>;
-		};
-		recovery{
-			offset=<0x0 0x0>;
-			size=<0x0 0x1000000>;
-		};
-		boot{
-			offset=<0x0 0x0>;
-			size=<0x0 0x1000000>;
-		};
-		system{
-			offset=<0x0 0x0>;
-			size=<0x0 0x4000000>;
-		};
-		data{
-			offset=<0xffffffff 0xffffffff>;
-			size=<0x0 0x0>;
-		};
-	};
-};
-
 &aml_wifi{
 	status = "okay";
 	interrupt-gpios = <&gpio  GPIOX_7  GPIO_ACTIVE_HIGH>;
@@ -1391,11 +1246,6 @@
 	status = "okay";
 	reset-gpios = <&gpio    GPIOX_17 GPIO_ACTIVE_HIGH>;
 	hostwake-gpios = <&gpio GPIOX_19 GPIO_ACTIVE_HIGH>;
-};
-
-&pcie_A {
-	reset-gpio = <&gpio GPIOX_7 GPIO_ACTIVE_HIGH>;
-	status = "disable";
 };
 
 &meson_cooldev {
@@ -1410,11 +1260,4 @@
 	status = "okay";
 	pinctrl-0 = <&remote_pins>;
 	pinctrl-names = "default";
-};
-
-&spicc0 {
-	status = "disabled";
-	pinctrl-names = "default";
-	pinctrl-0 = <&spicc0_pins_c>;
-	cs-gpios = <&gpio GPIOC_2 GPIO_ACTIVE_HIGH>;
 };
