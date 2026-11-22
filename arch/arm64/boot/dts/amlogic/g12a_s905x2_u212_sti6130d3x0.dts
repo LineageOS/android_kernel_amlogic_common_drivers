@@ -191,29 +191,16 @@
 		compatible = "gpio-leds";
 		status = "okay";
 
-		net_red {
-			label="net_red";
-			/*gpios=<&gpio GPIOA_14 GPIO_ACTIVE_LOW>;*/
-			default-state ="on";
+		led_green {
+			label = "led_green";
+			gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
 		};
 
-		net_green {
-			label="net_green";
-			/*gpios=<&gpio GPIOA_15 GPIO_ACTIVE_HIGH>;*/
-			default-state ="on";
-		};
-
-		remote_led {
-			label = "remote_led";
-			/*gpios = <&gpio_ao GPIOAO_10 GPIO_ACTIVE_LOW>;*/
+		led_red {
+			label = "led_red";
+			gpios = <&gpio_ao GPIOAO_4 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
-			linux,default-trigger = "rc_feedback";
-		};
-
-		sys_led {
-			label="sys_led";
-			gpios=<&gpio_ao GPIOAO_11 GPIO_ACTIVE_LOW>;
-			default-state ="on";
 		};
 	};
 
@@ -848,8 +835,6 @@
 		aml-audio-card,name = "AML-AUGESOUND";
 
 		aml-audio-card,aux-devs = <&amlogic_codec>;
-		/*avout mute gpio*/
-		avout_mute-gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
 		/*for audio effect ,eqdrc */
 		aml-audio-card,effect = <&audio_effect>;
 
