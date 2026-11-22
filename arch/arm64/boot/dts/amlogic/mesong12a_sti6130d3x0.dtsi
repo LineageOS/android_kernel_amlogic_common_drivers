@@ -1056,6 +1056,9 @@
 		pinctrl-names="default", "hdmitx_i2c";
 		pinctrl-0=<&hdmitx_hpd &hdmitx_ddc>;
 		pinctrl-1=<&hdmitx_hpd_gpio &i2c3_master_pins1>;
+		hdmitx-gpios-hpd = <&gpio GPIOH_2 GPIO_ACTIVE_HIGH>;
+		hdmitx-gpios-scl = <&gpio GPIOH_1 GPIO_ACTIVE_HIGH>;
+		hdmitx-gpios-sda = <&gpio GPIOH_0 GPIO_ACTIVE_HIGH>;
 		clocks = <&clkc CLKID_VCLK2_ENCI
 			&clkc CLKID_VCLK2_VENCI0
 			&clkc CLKID_VCLK2_VENCI1
