@@ -1744,11 +1744,6 @@
 	hostwake-gpios = <&gpio GPIOX_19 GPIO_ACTIVE_HIGH>;
 };
 
-&pcie_A {
-	reset-gpio = <&gpio GPIOX_7 GPIO_ACTIVE_HIGH>;
-	status = "disable";
-};
-
 &meson_cooldev {
 	status = "okay";
 };
