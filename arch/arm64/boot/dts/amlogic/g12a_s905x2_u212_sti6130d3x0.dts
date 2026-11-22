@@ -1527,6 +1527,7 @@
 
 &dwc3 {
 	status = "okay";
+	snps,usb2-lpm-disable;
 };
 
 &usb2_phy_v2 {
