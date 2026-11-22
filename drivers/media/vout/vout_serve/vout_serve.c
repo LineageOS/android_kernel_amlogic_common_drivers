@@ -418,11 +418,11 @@ static ssize_t vout_mode_store(struct class *class,
 	char mode[VMODE_NAME_LEN_MAX];
 
 	mutex_lock(&vout_serve_mutex);
-	if (!disable_modesysfs || enable_debugmode) {
+	if (!disable_modesysfs) {
 		snprintf(mode, VMODE_NAME_LEN_MAX, "%s", buf);
 		set_vout_mode(mode);
 	} else {
-		VOUTPR("enable display/debug to set voutmode.\n");
+		VOUTPR("display/mode sysfs is disabled under DRM.\n");
 	}
 	mutex_unlock(&vout_serve_mutex);
 	return count;

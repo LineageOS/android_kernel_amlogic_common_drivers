@@ -150,6 +150,7 @@ void update_vinfo_from_formatpara(struct hdmitx_common *tx_comm)
 
 	/*update vinfo for out device.*/
 	calc_vinfo_from_hdmi_timing(&fmtpara->timing, vinfo);
+	vinfo->vout_device = tx_comm->vdev;
 	/*vinfo->info_3d = NON_3D;
 	 *if (hdev->flag_3dfp)
 	 *	vinfo->info_3d = FP_3D;
@@ -502,6 +503,8 @@ int hdmitx_common_disable_mode(struct hdmitx_common *tx_comm,
 EXPORT_SYMBOL(hdmitx_common_disable_mode);
 
 #ifdef CONFIG_AMLOGIC_VOUT_SERVE
+static int hdmitx_vout_state;
+
 struct vinfo_s *hdmitx_get_current_vinfo(void *data)
 {
 	return &global_tx_common->hdmitx_vinfo;
@@ -511,6 +514,7 @@ static int hdmitx_set_current_vmode(enum vmode_e mode, void *data)
 {
 	if (!(mode & VMODE_INIT_BIT_MASK)) {
 		HDMITX_INFO("warning, echo /sys/class/display/mode is disabled\n");
+		return -EOPNOTSUPP;
 	} else {
 		/* During the kernel startup process, the HDR/DV module will use
 		 * vinfo information, it needs to attach vinfo after the EDID is
@@ -533,10 +537,11 @@ static enum vmode_e hdmitx_validate_vmode(char *mode, unsigned int frac, void *d
 	 * maybe we dont have edid when this function called.
 	 */
 	timing = hdmitx_mode_match_timing_name(mode);
-	if (hdmitx_common_validate_vic(global_tx_common, timing->vic) == 0) {
-		/*should save mode name to vinfo, will be used in set_vmode*/
-		calc_vinfo_from_hdmi_timing(timing, vinfo);
-		vinfo->vout_device = global_tx_common->vdev;
+	if (timing && hdmitx_common_validate_vic(global_tx_common, timing->vic) == 0) {
+		if (!hdmitx_vout_state) {
+			calc_vinfo_from_hdmi_timing(timing, vinfo);
+			vinfo->vout_device = global_tx_common->vdev;
+		}
 		return VMODE_HDMI;
 	}
 
@@ -558,7 +563,6 @@ static int hdmitx_module_disable(enum vmode_e cur_vmod, void *data)
 	return 0;
 }
 
-static int hdmitx_vout_state;
 static int hdmitx_vout_set_state(int index, void *data)
 {
 	hdmitx_vout_state |= (1 << index);
