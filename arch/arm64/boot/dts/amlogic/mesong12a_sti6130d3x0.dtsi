@@ -2572,13 +2572,16 @@
 	 */
 	assigned-clocks = <&clkc CLKID_MALI_0_SEL>,
 			  <&clkc CLKID_MALI_0>,
-			  <&clkc CLKID_MALI>; /* Glitch free mux */
+			  <&clkc CLKID_MALI>, /* Glitch free mux */
+			  <&clkc CLKID_GP0_PLL>;
 	assigned-clock-parents = <&clkc CLKID_FCLK_DIV4>,
 				 <0>, /* Do Nothing */
-				 <&clkc CLKID_MALI_0>;
+				 <&clkc CLKID_MALI_0>,
+				 <0>; /* Do Nothing */
 	assigned-clock-rates = <0>, /* Do Nothing */
 				   <500000000>,
-				   <0>; /* Do Nothing */
+				   <0>, /* Do Nothing */
+				   <846000000>;
 
 };
 
