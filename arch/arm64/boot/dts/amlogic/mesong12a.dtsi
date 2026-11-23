@@ -371,9 +371,9 @@
 		      <0x0 0xff634540 0x0 0x8>;
 		interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-names = "macirq";
-		clocks = <&clkc CLKID_ETH_PHY>,
+		clocks = <&clkc CLKID_ETH>,
 			 <&clkc CLKID_FCLK_DIV2>,
-			 <&clkc CLKID_MPLL_50M>;
+			 <&clkc CLKID_MPLL2>;
 		clock-names = "stmmaceth", "clkin0", "clkin1";
 		rx-fifo-depth = <4096>;
 		tx-fifo-depth = <2048>;
