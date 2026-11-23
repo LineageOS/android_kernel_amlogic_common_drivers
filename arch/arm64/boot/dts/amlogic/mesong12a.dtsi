@@ -363,6 +363,15 @@
 		};
 	};
 
+	vclk_serve: vclk_serve {
+		compatible = "amlogic, vclk_serve";
+		status = "okay";
+		mode = <2>;
+		reg = <0x0 0xff63c000 0x0 0x4a0>, /* hiu reg */
+		      <0x0 0xff63c000 0x0 0x4a0>, /* ana reg */
+		      <0x0 0xff63c000 0x0 0x4a0>; /* clk reg */
+	};
+
 	ethmac: ethernet@ff3f0000 {
 		compatible = "amlogic,meson-axg-dwmac",
 			     "snps,dwmac-3.70a",
@@ -906,6 +915,9 @@
 				#clock-cells = <1>;
 				reg = <0x0 0x0 0x0 0xb0>;
 			};
+			pinctrl_audio: pinctrl {
+				compatible = "amlogic, g12a-audio-pinctrl";
+			};
 			ddr_manager {
 				compatible = "amlogic, g12a-audio-ddr-manager";
 				interrupts = <
@@ -1048,6 +1060,9 @@
 		pinctrl-names="default", "hdmitx_i2c";
 		pinctrl-0=<&hdmitx_hpd &hdmitx_ddc>;
 		pinctrl-1=<&hdmitx_hpd_gpio &i2c3_master_pins1>;
+		hdmitx-gpios-hpd = <&gpio GPIOH_2 GPIO_ACTIVE_HIGH>;
+		hdmitx-gpios-scl = <&gpio GPIOH_1 GPIO_ACTIVE_HIGH>;
+		hdmitx-gpios-sda = <&gpio GPIOH_0 GPIO_ACTIVE_HIGH>;
 		clocks = <&clkc CLKID_VCLK2_ENCI
 			&clkc CLKID_VCLK2_VENCI0
 			&clkc CLKID_VCLK2_VENCI1
