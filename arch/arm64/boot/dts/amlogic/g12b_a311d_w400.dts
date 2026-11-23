@@ -1025,7 +1025,7 @@
 		compatible = "amlogic, g12a-snd-tdmc";
 		#sound-dai-cells = <0>;
 		dai-tdm-lane-slot-mask-in = <1 0 0 0>;
-		#dai-tdm-lane-slot-mask-out = <1 0 1 1>;
+		dai-tdm-lane-slot-mask-out = <1 1 1 1>;
 		#dai-tdm-lane-oe-slot-mask-in = <0 0 0 0>;
 		#dai-tdm-lane-oe-slot-mask-out = <1 0 0 0>;
 		dai-tdm-clk-sel = <2>;
