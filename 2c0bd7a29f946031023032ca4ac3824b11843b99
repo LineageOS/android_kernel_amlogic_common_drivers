@@ -69,6 +69,24 @@
       "parentUuid": "fca13f2c_98e58d18",
       "revId": "2c0bd7a29f946031023032ca4ac3824b11843b99",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "40d54014_ca5a6b7b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2026-11-24T18:46:04Z",
+      "side": 1,
+      "message": "he means the symlink - \"s/this/that commit/\" amremote0 isn\u0027t created, so we can revert the symlink.",
+      "parentUuid": "8d5be7c1_17f607ed",
+      "revId": "2c0bd7a29f946031023032ca4ac3824b11843b99",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
