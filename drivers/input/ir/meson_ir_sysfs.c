@@ -469,8 +469,7 @@ int meson_ir_sysfs_init(struct meson_ir_chip *chip)
 	chip->chr_class = kzalloc(sizeof(*chip->chr_class), GFP_KERNEL);
 	if (!chip->chr_class)
 		return -ENOMEM;
-	chip->chr_class->name = devm_kasprintf(chip->dev, GFP_KERNEL,
-					     "remote%d", chip->dev_no);
+	chip->chr_class->name = devm_kasprintf(chip->dev, GFP_KERNEL, "remote");
 	chip->chr_class->owner = THIS_MODULE;
 	chip->chr_class->dev_groups = meson_ir_sysfs_groups;
 

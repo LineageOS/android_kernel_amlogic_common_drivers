@@ -901,8 +901,7 @@ static int meson_ir_probe(struct platform_device *pdev)
 	dev->enable = !disable_ir;
 
 	chip->dev_no = atomic_inc_return(&meson_ir_dev_no);
-	chip->dev_name = devm_kasprintf(&pdev->dev, GFP_KERNEL,
-					"amremote%d", chip->dev_no);
+	chip->dev_name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "amremote");
 
 	tasklet_setup(&chip->tasklet, meson_ir_tasklet);
 	chip->tasklet.data = (unsigned long)chip;
