@@ -1170,12 +1170,14 @@
 	status = "okay";
 	portnum = <1>;
 	otg = <0>;
+	usb-role-switch;
+	amlogic,id-override-delay-ms = <8000>;
 };
 
 &dwc2_a {
 	status = "okay";
-	/** 0: normal, 1: otg+dwc3 host only, 2: otg+dwc3 device only*/
-	controller-type = <1>;
+	/** 0: normal, 1: otg+dwc3 host only, 2: otg+dwc3 device only, 3: otg+dwc3 otg */
+	controller-type = <3>;
 };
 
 &ethmac {
