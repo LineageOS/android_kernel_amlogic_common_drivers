@@ -123,6 +123,24 @@
       "parentUuid": "13538a8c_6f7611b6",
       "revId": "2c0bd7a29f946031023032ca4ac3824b11843b99",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6fcec666_2ab73cad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2026-11-24T23:16:49Z",
+      "side": 1,
+      "message": "I don\u0027t see why the symlink wouldn\u0027t work, honestly.\n\n```\njaws / # ls -laZ /dev/amremote*\nlrwxrwxrwx 1 root root u:object_r:input_device:s0        14 1970-01-01 01:00 /dev/amremote -\u003e /dev/amremote0\ncrw------- 1 root root u:object_r:input_device:s0  484,   0 1970-01-01 01:00 /dev/amremote0\n```",
+      "parentUuid": "fec2e2e4_be74476f",
+      "revId": "2c0bd7a29f946031023032ca4ac3824b11843b99",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
