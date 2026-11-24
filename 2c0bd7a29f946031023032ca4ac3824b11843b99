@@ -105,6 +105,24 @@
       "parentUuid": "40d54014_ca5a6b7b",
       "revId": "2c0bd7a29f946031023032ca4ac3824b11843b99",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fec2e2e4_be74476f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2026-11-24T20:39:50Z",
+      "side": 1,
+      "message": "I think it was an mis-pick by HighWay from ne-common. Though, I\u0027m not even sure it\u0027s right there, someone (highway) needs to check. it\u0027s possible his khadas board does something funny in DTS.",
+      "parentUuid": "13538a8c_6f7611b6",
+      "revId": "2c0bd7a29f946031023032ca4ac3824b11843b99",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
