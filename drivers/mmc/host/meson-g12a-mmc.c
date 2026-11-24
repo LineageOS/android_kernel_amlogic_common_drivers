@@ -773,6 +773,7 @@ static int meson_mmc_set_adjust(struct mmc_host *mmc, u32 value)
 	val |= value << __ffs(CLK_ADJUST_DELAY);
 
 	writel(val, host->regs + SD_EMMC_V3_ADJUST);
+	pdata->adj = val;
 	return 0;
 }
 
@@ -982,10 +983,10 @@ static void set_fixed_adj_line_delay(u32 step,
 			writel(AML_MV_DLY2_NOMMC_CMD(step),
 					host->regs + SD_EMMC_DELAY2);
 	}
+	pdata->dly1 = readl(host->regs + SD_EMMC_DELAY1);
+	pdata->dly2 = readl(host->regs + SD_EMMC_DELAY2);
 	pr_debug("step:%u, delay1:0x%x, delay2:0x%x\n",
-			step,
-			readl(host->regs + SD_EMMC_DELAY1),
-			readl(host->regs + SD_EMMC_DELAY2));
+			step, pdata->dly1, pdata->dly2);
 }
 
 /*	1. find first removed a fixed_adj_point
@@ -1081,10 +1082,11 @@ static int meson_mmc_fixadj_tuning(struct mmc_host *mmc, u32 opcode)
 	u8 *adj_print = NULL;
 	u32 len = 0;
 
-	old_dly = readl(host->regs + SD_EMMC_V3_ADJUST);
+	old_dly = readl(host->regs + SD_EMMC_DELAY1);
 	d1_dly = (old_dly >> 0x6) & 0x3F;
 	pr_debug("Data 1 aligned delay is %d\n", d1_dly);
 	writel(0, host->regs + SD_EMMC_V3_ADJUST);
+	pdata->adj = 0;
 
 tuning:
 	/* renew */
@@ -1130,6 +1132,9 @@ tuning:
 		vclk &= ~CLK_DIV_MASK;
 		vclk |= clk_div & CLK_DIV_MASK;
 		writel(vclk, host->regs + SD_EMMC_CLOCK);
+		pdata->clkc = vclk;
+		mmc->actual_clock = clk_get_rate(host->mmc_clk);
+		pdata->req_rate = mmc->actual_clock;
 		pr_info("%s: tuning failed, reduce freq and retuning\n",
 			mmc_hostname(mmc));
 		goto tuning;
@@ -1153,6 +1158,7 @@ tuning:
 		dly &= ~(0x3F << 6);
 		dly |= d1_dly << 6;
 		writel(dly, host->regs + SD_EMMC_DELAY1);
+		pdata->dly1 = dly;
 		goto tuning;
 	} else {
 		pr_debug("%s: best_s = %d, best_sz = %d\n",
@@ -1164,6 +1170,7 @@ tuning:
 		adj_delay_find = best_s + (best_sz - 1) / 2
 		+ (best_sz - 1) % 2;
 		writel(old_dly, host->regs + SD_EMMC_DELAY1);
+		pdata->dly1 = old_dly;
 		pr_info("tuning-c:%u, tuning-s:%u\n",
 			adj_delay_find % clk_div, best_sz);
 	}
@@ -1171,12 +1178,18 @@ tuning:
 
 	meson_mmc_set_adjust(mmc, adj_delay_find);
 
+	pdata->clkc = readl(host->regs + SD_EMMC_CLOCK);
+	pdata->adj = readl(host->regs + SD_EMMC_V3_ADJUST);
+	pdata->dly1 = readl(host->regs + SD_EMMC_DELAY1);
+	pdata->dly2 = readl(host->regs + SD_EMMC_DELAY2);
+	pdata->intf3 = readl(host->regs + SD_EMMC_INTF3);
+
 	pr_info("%s: clk= 0x%x, adj = 0x%x, dly1 = %x, dly2 = %x\n",
 			mmc_hostname(mmc),
-			readl(host->regs + SD_EMMC_CLOCK),
-			readl(host->regs + SD_EMMC_V3_ADJUST),
-			readl(host->regs + SD_EMMC_DELAY1),
-			readl(host->regs + SD_EMMC_DELAY2));
+			pdata->clkc,
+			pdata->adj,
+			pdata->dly1,
+			pdata->dly2);
 
 	return 0;
 }
@@ -1448,6 +1461,10 @@ static void meson_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 	pdata->clkc = readl(host->regs + SD_EMMC_CLOCK);
 	pdata->ctrl = readl(host->regs + SD_EMMC_CFG);
+	pdata->adj = readl(host->regs + SD_EMMC_V3_ADJUST);
+	pdata->dly1 = readl(host->regs + SD_EMMC_DELAY1);
+	pdata->dly2 = readl(host->regs + SD_EMMC_DELAY2);
+	pdata->intf3 = readl(host->regs + SD_EMMC_INTF3);
 	dev_dbg(host->dev, "SD_EMMC_CFG:  0x%08x, %s\n", val, mmc_hostname(mmc));
 	dev_dbg(host->dev, "SD_EMMC_clock:  0x%08x, %s\n", readl(host->regs), mmc_hostname(mmc));
 
@@ -1757,6 +1774,7 @@ static void meson_mmc_start_cmd(struct mmc_host *mmc, struct mmc_command *cmd)
 		val = readl(host->regs + SD_EMMC_CFG);
 		val &= ~CFG_AUTO_CLK;
 		writel(val, host->regs + SD_EMMC_CFG);
+		pdata->ctrl = val;
 	}
 
 	/* data? */
@@ -2203,8 +2221,10 @@ static int meson_mmc_execute_tuning(struct mmc_host *mmc, u32 opcode)
 	struct meson_host *host = pdata->host;
 	int err = 0;
 
-	if (host->tdma)
+	if (host->tdma) {
 		wait_for_completion(&host->drv_completion);
+		aml_save_parameter(mmc);
+	}
 	pdata->is_tuning = 1;
 	err = meson_mmc_fixadj_tuning(mmc, opcode);
 	pdata->is_tuning = 0;
@@ -2722,6 +2742,10 @@ static int g12a_mmc_probe(struct platform_device *pdev)
 		pdata->src_clk = NULL;
 		pdata->clkc = readl(host->regs + SD_EMMC_CLOCK);
 		pdata->ctrl = readl(host->regs + SD_EMMC_CFG);
+		pdata->adj = readl(host->regs + SD_EMMC_V3_ADJUST);
+		pdata->dly1 = readl(host->regs + SD_EMMC_DELAY1);
+		pdata->dly2 = readl(host->regs + SD_EMMC_DELAY2);
+		pdata->intf3 = readl(host->regs + SD_EMMC_INTF3);
 
 		/* Get regulators and the supported OCR mask */
 		ret = mmc_regulator_get_supply(mmc);
