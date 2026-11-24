@@ -16,6 +16,41 @@
       "message": "What about https://review.lineageos.org/q/Iea0bea0ca1bf2f2667295e4b13b473db4e329c54",
       "revId": "2c0bd7a29f946031023032ca4ac3824b11843b99",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fca13f2c_98e58d18",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 34376
+      },
+      "writtenOn": "2026-11-24T17:36:43Z",
+      "side": 1,
+      "message": "This is not needed\nm5:/ $ ls -la /dev/amremote\ncrw------- 1 root root 484, 0 1970-01-01 00:00 /dev/amremote",
+      "revId": "2c0bd7a29f946031023032ca4ac3824b11843b99",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6405b8a8_7a73c5e6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 34376
+      },
+      "writtenOn": "2026-11-24T17:36:43Z",
+      "side": 1,
+      "message": "This is not needed\nm5:/ $ ls -la /dev/amremote\ncrw------- 1 root root 484,   0 1970-01-01 00:00 /dev/amremote",
+      "parentUuid": "3930394e_a8f64b25",
+      "revId": "2c0bd7a29f946031023032ca4ac3824b11843b99",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
