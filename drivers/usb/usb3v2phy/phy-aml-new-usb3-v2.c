@@ -886,30 +886,51 @@ static int amlogic_new_usb3_remove(struct platform_device *pdev)
 	return 0;
 }
 
-#ifdef CONFIG_PM_RUNTIME
-
-static int amlogic_new_usb3_runtime_suspend(struct device *dev)
+#ifdef CONFIG_PM_SLEEP
+static int amlogic_new_usb3_suspend_sleep(struct device *dev)
 {
+	struct amlogic_usb_v2 *phy = dev_get_drvdata(dev);
+
+	cancel_delayed_work_sync(&phy->id_override_work);
 	return 0;
 }
 
-static int amlogic_new_usb3_runtime_resume(struct device *dev)
+static int amlogic_new_usb3_resume_sleep(struct device *dev)
 {
-	u32 ret = 0;
+	struct amlogic_usb_v2 *phy = dev_get_drvdata(dev);
 
-	return ret;
+	/* Give the upstream host time to re-enumerate the gadget. */
+	if (READ_ONCE(phy->id_override_auto))
+		schedule_delayed_work(&phy->id_override_work,
+				      msecs_to_jiffies(phy->id_override_delay_ms));
+	return 0;
 }
 
+static void amlogic_new_usb3_complete(struct device *dev)
+{
+	struct amlogic_usb_v2 *phy = dev_get_drvdata(dev);
+	int ret;
+
+	if (!phy->id_override_gpio)
+		return;
+
+	/* No ID interrupt restarts the controller, so reapply the role. */
+	ret = phy_aml_set_role(phy, phy->current_role);
+	if (ret)
+		dev_err(dev, "failed to restore USB role %s: %d\n",
+			usb_role_string(phy->current_role), ret);
+}
+#endif
+
 static const struct dev_pm_ops amlogic_new_usb3_pm_ops = {
-	SET_RUNTIME_PM_OPS(amlogic_new_usb3_runtime_suspend,
-		amlogic_new_usb3_runtime_resume,
-		NULL)
+	SET_SYSTEM_SLEEP_PM_OPS(amlogic_new_usb3_suspend_sleep,
+				amlogic_new_usb3_resume_sleep)
+#ifdef CONFIG_PM_SLEEP
+	.complete = amlogic_new_usb3_complete,
+#endif
 };
 
 #define DEV_PM_OPS     (&amlogic_new_usb3_pm_ops)
-#else
-#define DEV_PM_OPS     NULL
-#endif
 
 #ifdef CONFIG_OF
 static const struct of_device_id amlogic_new_usb3_v2_id_table[] = {
