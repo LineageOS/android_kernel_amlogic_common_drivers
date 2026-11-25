@@ -1267,3 +1267,16 @@
 	pinctrl-0 = <&remote_pins>;
 	pinctrl-names = "default";
 };
+
+&custom_maps {
+	map_num = <5>;
+	map4 = <&map_4>;
+
+	map_4: map_4 {
+		mapname = "freebox-pop-ir";
+		customcode = <0xfe06>;
+		release_delay = <57>;
+		size = <1>;
+		keymap = <REMOTE_KEY(0x00, KEY_POWER)>;
+	};
+};
