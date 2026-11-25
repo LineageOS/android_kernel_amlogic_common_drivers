@@ -141,6 +141,24 @@
       "parentUuid": "fec2e2e4_be74476f",
       "revId": "2c0bd7a29f946031023032ca4ac3824b11843b99",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "491f882d_b1226b8a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2026-11-25T03:51:06Z",
+      "side": 1,
+      "message": "I think we\u0027re all talking past each other accidentally - the binary we use from Jarvis _looks_ for amremote, not amremote0 - so the entire point is that the symlink is not useful.\n\nPlus the symlink only covers /dev, this addresses sysfs nodes.\n\nWith this alone - it works fine, the symlink is just useless either way and should be reverted.",
+      "parentUuid": "6fcec666_2ab73cad",
+      "revId": "2c0bd7a29f946031023032ca4ac3824b11843b99",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
