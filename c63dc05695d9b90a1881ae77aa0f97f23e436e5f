@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b399c8ca_f8d97894",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3917
+      },
+      "writtenOn": "2026-11-25T23:37:22Z",
+      "side": 1,
+      "message": "The whole chain works fine for me on wade/nicepool",
+      "revId": "c63dc05695d9b90a1881ae77aa0f97f23e436e5f",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
